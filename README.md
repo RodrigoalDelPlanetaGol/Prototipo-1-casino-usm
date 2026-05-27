@@ -25,6 +25,14 @@ npm run dev
 
 Y con eso ya tienen el npm listo y también corren el React.
 
+# Cosas nuevas
+
+## (27/05)
+tienen que hacer cd mi-proyecto y poner esto pa que la página les cargue: 
+npm install lucide-react
+creo que todos tienen que hacerlo.
+recuerden poner el Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass antes de instalar
+
 # Pa que sirve cada archivo/cosa que hay en el repositorio
 
 ### `README.md`
