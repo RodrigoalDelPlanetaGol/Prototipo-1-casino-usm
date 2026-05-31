@@ -137,7 +137,7 @@ export default function App() {
         body { margin: 0; font-family: 'Montserrat', Arial, Helvetica, sans-serif; background: #edf0f2; color: #1f2937; }
         button, input, select { font: inherit; }
         .app-shell { min-height: 100vh; background: #edf0f2; }
-        .container { max-width: 1110px; margin: 0 auto; }
+        .container { max-width: 100%; margin: 0 auto; }
         .top-strip { background: ${BLUE}; color: #fff; }
         .top-strip__inner { display: flex; justify-content: space-between; align-items: center; padding: 6px 14px; font-size: 12px; font-weight: 700; }
         .top-strip__right { display: flex; align-items: center; gap: 16px; }
@@ -168,7 +168,7 @@ export default function App() {
         .calendar__legend { display: flex; align-items: center; gap: 8px; color: #475569; font-size: 14px; margin-bottom: 10px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
         .calendar-grid__head { font-weight: 600; color: #6b7280; font-size: 12px; }
-        .calendar-day { border: 1px solid #cfd8df; background: #fff; border-radius: 2px; padding: 8px 0; font-size: 14px; cursor: pointer; }
+        .calendar-day { border: 1px solid #cfd8df; background: #fff; color: #334155; border-radius: 2px; padding: 8px 0; font-size: 14px; cursor: pointer; }
         .calendar-day--active { background: ${BLUE}; color: #fff; border-color: ${BLUE}; }
         .actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px solid #e5e7eb; }
         .btn { border-radius: 2px; border: 1px solid #cfd8df; background: #fff; color: #334155; padding: 9px 14px; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', Arial, Helvetica, sans-serif; }
@@ -210,6 +210,14 @@ export default function App() {
           .desktop-top-actions { display: none; }
           .mobile-top-menu { display: block; width: 100%; }
         }
+        /* Ocultar la barra de desplazamiento pero mantener la funcionalidad */
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        * {
+          -ms-overflow-style: none; /* Para Internet Explorer y Edge */
+          scrollbar-width: none; /* Para Firefox */
+        }
       `}</style>
 
       <div className="top-strip">
@@ -231,28 +239,59 @@ export default function App() {
           <div className="brand">
             <UsmLogo />
           </div>
-          <button className="menu-btn" aria-label="Menú" onClick={() => setMenuOpen((v) => !v)}>
-            <Menu className="icon-btn" />
-          </button>
+
+          {/* Navegación real integrada en el header */}
+          <div style={{ display: "flex", alignItems: "center", gap: "24px" }} className="desktop-top-actions">
+            <div className="tabs" role="tablist" aria-label="Navegación del casino" style={{ borderBottom: "none", marginBottom: 0 }}>
+              {sections.map((section) => (
+                <button
+                  key={section}
+                  role="tab"
+                  aria-selected={activeSection === section}
+                  onClick={() => setActiveSection(section)}
+                  className={`tab ${activeSection === section ? "tab--active" : ""}`}
+                  style={{ padding: "8px 12px" }}
+                >
+                  {section}
+                </button>
+              ))}
+            </div>
+
+            {/* Botón de Ayuda flotante adaptado al header */}
+            <div style={{ position: "relative" }}>
+              <button 
+                onClick={() => setShowHelp((v) => !v)} 
+                className="btn" 
+                style={{ padding: "6px 12px", fontSize: "13px", background: "#f8fafc" }}
+              >
+                <HelpCircle className="icon-btn" style={{ width: 16, height: 16 }} />
+                Ayuda
+              </button>
+
+              {showHelp && (
+                <div className="subpanel" style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  width: "300px",
+                  zIndex: 150,
+                  boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)",
+                  marginTop: "12px"
+                }}>
+                  <div className="info-card__title" style={{ marginBottom: "8px" }}>Ayuda</div>
+                  <p className="muted" style={{ fontSize: "13px", lineHeight: "1.4" }}>
+                    Ante cualquier problema con la interfaz, por favor contacte al grupo para una evaluación de la misma.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </header>
 
       <main className="container main-shell">
         <div className="main-grid">
-          <div className="tabs" role="tablist" aria-label="Navegación del casino">
-            {sections.map((section) => (
-              <button
-                key={section}
-                role="tab"
-                aria-selected={activeSection === section}
-                onClick={() => setActiveSection(section)}
-                className={`tab ${activeSection === section ? "tab--active" : ""}`}
-              >
-                {section}
-              </button>
-            ))}
-          </div>
-
+          
           <div className={`mobile-menu ${menuOpen ? "mobile-menu--open" : ""}`}>
             {sections.map((section) => (
               <button
@@ -269,11 +308,6 @@ export default function App() {
             {activeSection === "Reserva de menú" && (
               <div className="section">
                 <div className="panel" style={{ padding: 14 }}>
-                  <div style={{ borderBottom: "1px solid #d8dee5", paddingBottom: 10, marginBottom: 14 }}>
-                    <h1 className="section__title">Reserva de menú</h1>
-                    <div className="section__subtitle">Sistema de casino de alimentación USM</div>
-                  </div>
-
                   <div className="field-grid">
                     <div className="field-grid field-grid--2">
                       <label className="field">
@@ -298,7 +332,7 @@ export default function App() {
                       </label>
                     </div>
 
-                    <div className="field-grid field-grid--aside">
+                    <div className="field-grid field-grid">
                       <div>
                         <div className="calendar">
                           <div className="calendar__legend">
@@ -320,22 +354,14 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="info-card">
-                        <div className="info-card__title">Contenido de interés</div>
-                        <p>• Cambios directos de reserva.</p>
-                        <p>• Información de alérgenos visible antes de confirmar.</p>
-                        <p>• Minuta integrada sin salir de la página.</p>
-                      </div>
                     </div>
 
                     <div className="actions">
                       <button className="btn"><Plus className="icon-btn" />Reservar</button>
-                      <button className="btn btn--primary"><Save className="icon-btn" />Guardar borrador</button>
                       <button onClick={() => setShowMinute((v) => !v)} className="btn">
                         {showMinute ? <ChevronDown className="icon-btn" /> : <ChevronRight className="icon-btn" />}
                         {showMinute ? "Ocultar minuta" : "Mostrar minuta"}
                       </button>
-                      <button onClick={() => setShowHelp((v) => !v)} className="btn"><HelpCircle className="icon-btn" />Ayuda</button>
                     </div>
                   </div>
                 </div>
@@ -352,21 +378,13 @@ export default function App() {
                     </div>
                   </div>
 
-                  {showHelp && (
-                    <div className="subpanel helpbox">
-                      <div className="info-card__title">Ayuda</div>
-                      <p className="muted">Este prototipo ya simula reserva, edición directa y minuta integrada en la misma vista.</p>
-                    </div>
-                  )}
+                  
 
                   {showMinute && (
                     <div className="subpanel helpbox">
-                      <div className="subpanel__header">
-                        <div>
-                          <h2 className="section__title" style={{ fontSize: 16, margin: 0 }}>Minuta</h2>
-                          <div className="mini">{minute.subtitle} · {selectedCampus}</div>
-                        </div>
-                        <span className="badge">En la misma página</span>
+                      <div style={{ textAlign: "center", marginBottom: 14 }}>
+                        <h2 className="section__title" style={{ fontSize: 24, margin: 0 }}>Minuta</h2>
+                        <div className="section__title">{minute.subtitle} · {selectedCampus}</div>
                       </div>
                       <div style={{ overflowX: "auto" }}>
                         <table className="table table--blue" style={{ minWidth: 700 }}>
@@ -387,9 +405,6 @@ export default function App() {
                             ))}
                           </tbody>
                         </table>
-                      </div>
-                      <div className="info-card" style={{ marginTop: 12 }}>
-                        <strong>Alergénos:</strong> visibles antes de confirmar, en el mismo flujo.
                       </div>
                     </div>
                   )}
@@ -510,7 +525,7 @@ export default function App() {
         </div>
       </main>
 
-      <footer className="footer">Sitio web administrado por Dirección General de Sistemas de Gestión</footer>
+      <footer className="footer">Sitio web hecho con cariño por el grupo 6</footer>
     </div>
   );
 }
