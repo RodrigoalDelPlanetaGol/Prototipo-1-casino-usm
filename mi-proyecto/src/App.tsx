@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { CalendarDays, CheckCircle2, ChevronDown, ChevronRight, HelpCircle, Menu, Plus, Save, Sparkles, X } from "lucide-react";
 
+const BLUE = "#015D8F";
 const campuses = ["San Joaquín", "Casa Central Valparaíso", "Viña del Mar", "Concepción"];
 const menuTypes = ["Común", "Hipocalórico", "Vegetariano"];
 const weekdays = ["Lu", "Ma", "Mi", "Ju", "Vi", "Sa", "Do"];
+const sections = ["Reserva de menú", "Mis reservas", "Mis consumos"];
 
 const minuteByCampus = {
   "San Joaquín": {
@@ -76,7 +78,17 @@ const initialReservations: Reservation[] = [
   },
 ];
 
-function App() {
+function UsmLogo() {
+  return (
+    <img
+      src="https://casino.usm.cl/solicitud/img/logo-usm.svg"
+      alt="Universidad Técnica Federico Santa María"
+      className="usm-logo"
+    />
+  );
+}
+
+export default function App() {
   const [activeSection, setActiveSection] = useState("Reserva de menú");
   const [selectedCampus, setSelectedCampus] = useState<keyof typeof minuteByCampus>("San Joaquín");
   const [selectedMenu, setSelectedMenu] = useState("Hipocalórico");
@@ -87,6 +99,7 @@ function App() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [draftMenu, setDraftMenu] = useState("Hipocalórico");
   const [draftCampus, setDraftCampus] = useState("San Joaquín");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const minute = minuteByCampus[selectedCampus];
   const availableCounts = useMemo(() => ({ almuerzos: 6, cenas: 0 }), []);
@@ -108,69 +121,71 @@ function App() {
     setEditingId(null);
   };
 
-  const cancelReservation = (id: number) => {
-    setReservations((current) => current.filter((r) => r.id !== id));
-  };
+  const cancelReservation = (id: number) => setReservations((current) => current.filter((r) => r.id !== id));
 
-  const sections = ["Reserva de menú", "Mis reservas", "Mis consumos", "Minuta"];
+  const selectSection = (section: string) => {
+    setActiveSection(section);
+    setMenuOpen(false);
+  };
 
   return (
     <div className="app-shell">
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
         html, body, #root { height: 100%; }
-        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #edf0f2; color: #1f2937; }
+        body { margin: 0; font-family: 'Montserrat', Arial, Helvetica, sans-serif; background: #edf0f2; color: #1f2937; }
         button, input, select { font: inherit; }
         .app-shell { min-height: 100vh; background: #edf0f2; }
-        .container { max-width: 1440px; margin: 0 auto; }
-        .top-strip { background: #156f9c; color: #fff; }
-        .top-strip__inner { display: flex; justify-content: space-between; align-items: center; padding: 6px 16px; font-size: 12px; font-weight: 700; }
-        .header { background: #fff; border-bottom: 1px solid #d1d5db; }
-        .header__inner { display: flex; justify-content: space-between; align-items: center; padding: 18px 16px; }
-        .brand { display: flex; align-items: center; gap: 16px; }
-        .brand__logo { width: 60px; height: 60px; background: #e5e7eb; border-radius: 2px; display: grid; place-items: center; color: #6b7280; font-size: 12px; font-weight: 700; }
-        .brand__text-small { font-size: 11px; color: #6b7280; letter-spacing: 0.22em; }
-        .brand__text-big { font-size: 16px; font-weight: 700; color: #374151; letter-spacing: 0.18em; }
-        .menu-btn { background: #156f9c; color: #fff; border: 0; width: 48px; height: 48px; border-radius: 2px; display: grid; place-items: center; }
-        .main-grid { display: grid; grid-template-columns: 280px 1fr; gap: 12px; padding: 12px; align-items: start; }
-        .sidebar { background: #156f9c; border: 1px solid #aeb9c2; border-radius: 2px; overflow: hidden; }
-        .sidebar__item { width: 100%; background: #156f9c; color: #fff; border: 0; border-bottom: 1px solid rgba(0,0,0,.12); text-align: left; padding: 14px 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: space-between; }
-        .sidebar__item--active { background: #0f5f87; }
-        .content { background: #fff; border: 1px solid #cfd8df; border-radius: 2px; overflow: hidden; min-height: 78vh; }
-        .section { padding: 14px; }
-        .section__title { font-size: 17px; margin: 0; color: #334155; }
+        .container { max-width: 1110px; margin: 0 auto; }
+        .top-strip { background: ${BLUE}; color: #fff; }
+        .top-strip__inner { display: flex; justify-content: space-between; align-items: center; padding: 6px 14px; font-size: 12px; font-weight: 700; }
+        .top-strip__right { display: flex; align-items: center; gap: 16px; }
+        .header { background: #fff; border-bottom: 1px solid #d8d8d8; }
+        .header__inner { display: flex; justify-content: space-between; align-items: center; padding: 14px 14px 18px; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .usm-logo { width: min(325px, 44vw); max-width: 100%; height: auto; max-height: 72px; display: block; }
+        .menu-btn { background: ${BLUE}; color: #fff; border: 0; width: 48px; height: 48px; border-radius: 3px; display: grid; place-items: center; cursor: pointer; }
+        .main-shell { background: #fff; border: 1px solid #d8d8d8; border-top: 0; }
+        .main-grid { padding: 0 0 14px; }
+        .tabs { display: flex; gap: 0; border-bottom: 1px solid #d8d8d8; padding-left: 0; overflow-x: auto; margin: 0 0 0 0; }
+        .tab { border: 1px solid #d8d8d8; border-bottom: 0; background: #f8fafc; color: ${BLUE}; padding: 9px 16px; font-size: 14px; cursor: pointer; white-space: nowrap; border-top-left-radius: 3px; border-top-right-radius: 3px; font-family: 'Montserrat', Arial, Helvetica, sans-serif; }
+        .tab--active { background: #fff; color: #334155; position: relative; top: 1px; }
+        .content { background: #fff; min-height: 70vh; }
+        .section { padding: 18px 22px 18px; }
+        .section__title { font-size: 17px; margin: 0; color: #334155; font-weight: 700; }
         .section__subtitle { font-size: 13px; color: #6b7280; margin-top: 4px; }
         .panel { border: 1px solid #d8dee5; border-radius: 2px; background: #fff; }
         .panel--soft { background: #f7fbfd; }
         .field-grid { display: grid; gap: 14px; }
         .field-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .field-grid--aside { grid-template-columns: 1fr 270px; }
-        .field { display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
-        .field__label { font-weight: 700; color: #334155; }
-        .field__input, .field__select { width: 100%; border: 1px solid #cfd8df; background: #fff; padding: 9px 12px; border-radius: 2px; }
-        .field__input[readonly] { background: #f3f4f6; }
+        .field { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: #374151; }
+        .field__label { font-weight: 600; color: #374151; }
+        .field__input, .field__select { width: 100%; border: 1px solid #cfd8df; background: #fff; color: #374151; padding: 9px 12px; border-radius: 2px; font-family: 'Montserrat', Arial, Helvetica, sans-serif; }
+        .field__input[readonly] { background: #eceff3; color: #4b5563; }
         .calendar { border: 1px solid #cfd8df; border-radius: 2px; background: #fff; padding: 14px; }
         .calendar__legend { display: flex; align-items: center; gap: 8px; color: #475569; font-size: 14px; margin-bottom: 10px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
-        .calendar-grid__head { font-weight: 700; color: #6b7280; font-size: 12px; }
+        .calendar-grid__head { font-weight: 600; color: #6b7280; font-size: 12px; }
         .calendar-day { border: 1px solid #cfd8df; background: #fff; border-radius: 2px; padding: 8px 0; font-size: 14px; cursor: pointer; }
-        .calendar-day--active { background: #156f9c; color: #fff; border-color: #156f9c; }
+        .calendar-day--active { background: ${BLUE}; color: #fff; border-color: ${BLUE}; }
         .actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 12px; border-top: 1px solid #e5e7eb; }
-        .btn { border-radius: 2px; border: 1px solid #cfd8df; background: #fff; color: #334155; padding: 9px 14px; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-        .btn--primary { background: #156f9c; border-color: #156f9c; color: #fff; }
+        .btn { border-radius: 2px; border: 1px solid #cfd8df; background: #fff; color: #334155; padding: 9px 14px; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: 'Montserrat', Arial, Helvetica, sans-serif; }
+        .btn--primary { background: ${BLUE}; border-color: ${BLUE}; color: #fff; }
         .info-card { padding: 14px; border: 1px solid #d8dee5; border-radius: 2px; background: #f7fbfd; font-size: 14px; color: #334155; }
         .info-card__title { font-weight: 700; margin-bottom: 8px; }
         .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
         .stat { border: 1px solid #d8dee5; border-radius: 2px; background: #f7fbfd; padding: 14px; text-align: center; }
         .stat__label { font-size: 14px; color: #6b7280; }
-        .stat__value { margin-top: 4px; font-size: 38px; line-height: 1; color: #156f9c; font-weight: 700; }
+        .stat__value { margin-top: 4px; font-size: 38px; line-height: 1; color: ${BLUE}; font-weight: 700; }
         .subpanel { border: 1px solid #d8dee5; border-radius: 2px; background: #fff; padding: 14px; }
         .subpanel__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .badge { background: #e6f2f7; color: #156f9c; padding: 4px 8px; border-radius: 2px; font-weight: 700; font-size: 12px; }
+        .badge { background: #e6f2f7; color: ${BLUE}; padding: 4px 8px; border-radius: 2px; font-weight: 700; font-size: 12px; }
         .table { width: 100%; border-collapse: collapse; }
         .table th, .table td { border: 1px solid #cfd8df; padding: 10px 12px; vertical-align: top; }
         .table thead th { background: #f1f5f9; color: #334155; font-weight: 700; }
-        .table--blue thead th { background: #156f9c; color: #fff; }
+        .table--blue thead th { background: ${BLUE}; color: #fff; }
         .table tbody tr:nth-child(even) { background: #f8fafc; }
         .table tbody tr:nth-child(odd) { background: #fff; }
         .mini { font-size: 12px; color: #6b7280; }
@@ -178,56 +193,77 @@ function App() {
         .icon-btn { width: 18px; height: 18px; }
         .muted { color: #6b7280; }
         .helpbox { margin-top: 12px; }
+        .mobile-menu { display: none; margin: 8px 0 0; }
+        .mobile-menu--open { display: block; }
+        .mobile-menu .sidebar__item { width: 100%; background: ${BLUE}; color: #fff; border: 0; border-bottom: 1px solid rgba(0,0,0,.12); text-align: left; padding: 14px 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-family: 'Montserrat', Arial, Helvetica, sans-serif; }
+        .mobile-menu .sidebar__item--active { background: #0f5f87; }
+        .mobile-top-menu { display: none; }
         @media (max-width: 1100px) {
-          .main-grid { grid-template-columns: 1fr; }
           .field-grid--aside { grid-template-columns: 1fr; }
         }
         @media (max-width: 720px) {
+          .usm-logo { width: min(250px, 70vw); max-height: 58px; }
           .field-grid--2 { grid-template-columns: 1fr; }
           .stats { grid-template-columns: 1fr; }
           .header__inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .section { padding: 12px; }
+          .desktop-top-actions { display: none; }
+          .mobile-top-menu { display: block; width: 100%; }
         }
       `}</style>
 
       <div className="top-strip">
         <div className="container top-strip__inner">
           <div>USM.cl</div>
-          <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+          <div className="top-strip__right desktop-top-actions">
+            <button className="btn" style={{ color: "#fff", borderColor: "transparent", background: "transparent", padding: 0 }}>Minuta ▾</button>
             <span>Rodrigo Caceres</span>
             <button className="btn" style={{ color: "#fff", borderColor: "transparent", background: "transparent", padding: 0 }}>Cerrar sesión</button>
           </div>
+          <button className="menu-btn mobile-top-menu" aria-label="Menú" onClick={() => setMenuOpen((v) => !v)}>
+            <Menu className="icon-btn" />
+          </button>
         </div>
       </div>
 
       <header className="header">
         <div className="container header__inner">
           <div className="brand">
-            <div className="brand__logo">USM</div>
-            <div>
-              <div className="brand__text-small">UNIVERSIDAD TÉCNICA</div>
-              <div className="brand__text-big">FEDERICO SANTA MARÍA</div>
-            </div>
+            <UsmLogo />
           </div>
-          <button className="menu-btn" aria-label="Menú">
+          <button className="menu-btn" aria-label="Menú" onClick={() => setMenuOpen((v) => !v)}>
             <Menu className="icon-btn" />
           </button>
         </div>
       </header>
 
-      <main className="container">
+      <main className="container main-shell">
         <div className="main-grid">
-          <aside className="sidebar">
+          <div className="tabs" role="tablist" aria-label="Navegación del casino">
             {sections.map((section) => (
               <button
                 key={section}
+                role="tab"
+                aria-selected={activeSection === section}
                 onClick={() => setActiveSection(section)}
+                className={`tab ${activeSection === section ? "tab--active" : ""}`}
+              >
+                {section}
+              </button>
+            ))}
+          </div>
+
+          <div className={`mobile-menu ${menuOpen ? "mobile-menu--open" : ""}`}>
+            {sections.map((section) => (
+              <button
+                key={section}
+                onClick={() => selectSection(section)}
                 className={`sidebar__item ${activeSection === section ? "sidebar__item--active" : ""}`}
               >
                 <span>{section}</span>
-                {section === "Minuta" ? <ChevronDown className="icon-btn" /> : null}
               </button>
             ))}
-          </aside>
+          </div>
 
           <section className="content">
             {activeSection === "Reserva de menú" && (
@@ -250,13 +286,13 @@ function App() {
                       </label>
                       <label className="field">
                         <span className="field__label">Campus o sede</span>
-                        <select value={selectedCampus} onChange={(e) => { setSelectedCampus(e.target.value as keyof typeof minuteByCampus); setDraftCampus(e.target.value); }} className="field__select">
+                        <select value={selectedCampus} onChange={(e) => setSelectedCampus(e.target.value as keyof typeof minuteByCampus)} className="field__select">
                           {campuses.map((campus) => <option key={campus}>{campus}</option>)}
                         </select>
                       </label>
                       <label className="field">
                         <span className="field__label">Menú</span>
-                        <select value={selectedMenu} onChange={(e) => { setSelectedMenu(e.target.value); setDraftMenu(e.target.value); }} className="field__select">
+                        <select value={selectedMenu} onChange={(e) => setSelectedMenu(e.target.value)} className="field__select">
                           {menuTypes.map((menu) => <option key={menu}>{menu}</option>)}
                         </select>
                       </label>
@@ -293,22 +329,13 @@ function App() {
                     </div>
 
                     <div className="actions">
-                      <button className="btn">
-                        <Plus className="icon-btn" />
-                        Reservar
-                      </button>
-                      <button className="btn btn--primary">
-                        <Save className="icon-btn" />
-                        Guardar borrador
-                      </button>
+                      <button className="btn"><Plus className="icon-btn" />Reservar</button>
+                      <button className="btn btn--primary"><Save className="icon-btn" />Guardar borrador</button>
                       <button onClick={() => setShowMinute((v) => !v)} className="btn">
                         {showMinute ? <ChevronDown className="icon-btn" /> : <ChevronRight className="icon-btn" />}
                         {showMinute ? "Ocultar minuta" : "Mostrar minuta"}
                       </button>
-                      <button onClick={() => setShowHelp((v) => !v)} className="btn">
-                        <HelpCircle className="icon-btn" />
-                        Ayuda
-                      </button>
+                      <button onClick={() => setShowHelp((v) => !v)} className="btn"><HelpCircle className="icon-btn" />Ayuda</button>
                     </div>
                   </div>
                 </div>
@@ -392,7 +419,7 @@ function App() {
 
                     {editingId != null && (
                       <div className="subpanel" style={{ background: "#f7fbfd" }}>
-                        <div className="info-card__title" style={{ color: "#156f9c", display: "flex", alignItems: "center", gap: 8 }}>
+                        <div className="info-card__title" style={{ color: BLUE, display: "flex", alignItems: "center", gap: 8 }}>
                           <Sparkles className="icon-btn" />
                           Edición directa de reserva
                         </div>
@@ -411,14 +438,8 @@ function App() {
                           </label>
                         </div>
                         <div className="actions">
-                          <button onClick={saveEdit} className="btn btn--primary">
-                            <CheckCircle2 className="icon-btn" />
-                            Guardar cambios
-                          </button>
-                          <button onClick={() => setEditingId(null)} className="btn">
-                            <X className="icon-btn" />
-                            Cancelar edición
-                          </button>
+                          <button onClick={saveEdit} className="btn btn--primary"><CheckCircle2 className="icon-btn" />Guardar cambios</button>
+                          <button onClick={() => setEditingId(null)} className="btn"><X className="icon-btn" />Cancelar edición</button>
                         </div>
                       </div>
                     )}
@@ -485,68 +506,6 @@ function App() {
                 </div>
               </div>
             )}
-
-            {activeSection === "Minuta" && (
-              <div className="section">
-                <div style={{ borderBottom: "1px solid #d8dee5", paddingBottom: 10, marginBottom: 14 }}>
-                  <h1 className="section__title">Minuta</h1>
-                  <div className="section__subtitle">Ya no redirige: se ve en la misma pantalla.</div>
-                </div>
-
-                <div className="panel panel--soft" style={{ padding: 12, marginBottom: 16, display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-                  <div className="muted">Selecciona sede para cambiar la minuta</div>
-                  <select value={selectedCampus} onChange={(e) => setSelectedCampus(e.target.value as keyof typeof minuteByCampus)} className="field__select" style={{ width: 260 }}>
-                    {campuses.map((campus) => <option key={campus}>{campus}</option>)}
-                  </select>
-                </div>
-
-                <div className="field-grid" style={{ gridTemplateColumns: "1.1fr 0.9fr" }}>
-                  <div className="subpanel" style={{ padding: 0, overflowX: "auto" }}>
-                    <table className="table table--blue" style={{ minWidth: 700, fontSize: 12 }}>
-                      <thead>
-                        <tr>
-                          <th>{minute.title}</th>
-                          <th>Lunes</th>
-                          <th>Martes</th>
-                          <th>Miércoles</th>
-                          <th>Jueves</th>
-                          <th>Viernes</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><strong>Entrada</strong></td>
-                          {minute.days.map((d) => <td key={d.day}>{d.entry}</td>)}
-                        </tr>
-                        <tr>
-                          <td><strong>Plato fondo</strong></td>
-                          {minute.days.map((d) => <td key={d.day}>{d.main}</td>)}
-                        </tr>
-                        <tr>
-                          <td><strong>Vegetariano</strong></td>
-                          {minute.days.map((d) => <td key={d.day}>{d.veg}</td>)}
-                        </tr>
-                        <tr>
-                          <td><strong>Hipocalórico</strong></td>
-                          {minute.days.map((d) => <td key={d.day}>{d.hypo}</td>)}
-                        </tr>
-                        <tr>
-                          <td><strong>Postre / alérgenos</strong></td>
-                          {minute.days.map((d) => <td key={d.day}>{d.dessert} · {d.allergens}</td>)}
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="info-card">
-                    <div className="info-card__title">Por qué se ve así</div>
-                    <p>La minuta comparte el mismo marco visual del sistema, pero se mantiene legible sin romper la página.</p>
-                    <p>El usuario sigue viendo la reserva junto con la información alimentaria relevante.</p>
-                    <p>Más adelante esto puede evolucionar a una tarjeta por día o a datos reales del backend.</p>
-                  </div>
-                </div>
-              </div>
-            )}
           </section>
         </div>
       </main>
@@ -555,5 +514,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
