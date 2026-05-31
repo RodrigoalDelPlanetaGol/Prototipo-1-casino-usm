@@ -269,11 +269,6 @@ export default function App() {
             {activeSection === "Reserva de menú" && (
               <div className="section">
                 <div className="panel" style={{ padding: 14 }}>
-                  <div style={{ borderBottom: "1px solid #d8dee5", paddingBottom: 10, marginBottom: 14 }}>
-                    <h1 className="section__title">Reserva de menú</h1>
-                    <div className="section__subtitle">Sistema de casino de alimentación USM</div>
-                  </div>
-
                   <div className="field-grid">
                     <div className="field-grid field-grid--2">
                       <label className="field">
@@ -320,12 +315,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="info-card">
-                        <div className="info-card__title">Contenido de interés</div>
-                        <p>• Cambios directos de reserva.</p>
-                        <p>• Información de alérgenos visible antes de confirmar.</p>
-                        <p>• Minuta integrada sin salir de la página.</p>
-                      </div>
                     </div>
 
                     <div className="actions">
