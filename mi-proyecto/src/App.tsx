@@ -100,6 +100,8 @@ export default function App() {
   const [draftMenu, setDraftMenu] = useState("Hipocalórico");
   const [draftCampus, setDraftCampus] = useState("San Joaquín");
   const [menuOpen, setMenuOpen] = useState(false);
+  //agregado 1
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   const minute = minuteByCampus[selectedCampus];
   const availableCounts = useMemo(() => ({ almuerzos: 6, cenas: 0 }), []);
@@ -119,7 +121,42 @@ export default function App() {
     if (editingId == null) return;
     setReservations((current) => current.map((r) => (r.id === editingId ? { ...r, menu: draftMenu, campus: draftCampus, registeredAt: "Modificada ahora" } : r)));
     setEditingId(null);
+
+    //agregado 2
+    setFeedbackMessage("Su reserva se ha editado correctamente");
+      setTimeout(() => {
+        setFeedbackMessage(null);
+      }, 3000);
   };
+
+  // agregado 3
+  const handleReserve = () => {
+    if (selectedDates.length === 0) {
+      setFeedbackMessage("Por favor, seleccione al menos un día en el calendario.");
+      setTimeout(() => setFeedbackMessage(null), 3000);
+      return;
+    }
+    const sortedDates = [...selectedDates].sort();
+    const fromDate = sortedDates[0];
+    const toDate = sortedDates[sortedDates.length - 1];
+    const newReservation: Reservation = {
+      id: Date.now(), 
+      code: Math.floor(100000 + Math.random() * 900000).toString(),
+      registeredAt: "Ahora",
+      from: fromDate,
+      to: toDate,
+      menu: selectedMenu,
+      campus: selectedCampus,
+      status: "Activa",
+    };
+    setReservations((current) => [...current, newReservation]);
+    setSelectedDates([]);
+    setFeedbackMessage("Reserva guardada correctamente");
+    setTimeout(() => setFeedbackMessage(null), 3000);
+    setActiveSection("Mis reservas");
+  };
+
+
 
   const cancelReservation = (id: number) => setReservations((current) => current.filter((r) => r.id !== id));
 
@@ -198,6 +235,29 @@ export default function App() {
         .mobile-menu .sidebar__item { width: 100%; background: ${BLUE}; color: #fff; border: 0; border-bottom: 1px solid rgba(0,0,0,.12); text-align: left; padding: 14px 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-family: 'Montserrat', Arial, Helvetica, sans-serif; }
         .mobile-menu .sidebar__item--active { background: #0f5f87; }
         .mobile-top-menu { display: none; }
+
+        .toast {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          background: #10b981; /* Verde de éxito */
+          color: white;
+          padding: 12px 20px;
+          border-radius: 4px;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          z-index: 1000;
+          font-weight: 500;
+          font-size: 14px;
+          animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
         @media (max-width: 1100px) {
           .field-grid--aside { grid-template-columns: 1fr; }
         }
@@ -357,7 +417,7 @@ export default function App() {
                     </div>
 
                     <div className="actions">
-                      <button className="btn"><Plus className="icon-btn" />Reservar</button>
+                      <button onClick={handleReserve} className="btn btn--primary"><Plus className="icon-btn" />Reservar</button>
                       <button onClick={() => setShowMinute((v) => !v)} className="btn">
                         {showMinute ? <ChevronDown className="icon-btn" /> : <ChevronRight className="icon-btn" />}
                         {showMinute ? "Ocultar minuta" : "Mostrar minuta"}
@@ -524,7 +584,13 @@ export default function App() {
           </section>
         </div>
       </main>
-
+      {/* Renderizado condicional del mensaje de éxito (agregado 5) */}
+            {feedbackMessage && (
+              <div className="toast">
+                <CheckCircle2 className="icon-btn" style={{ width: 20, height: 20 }} />
+                {feedbackMessage}
+              </div>
+            )}
       <footer className="footer">Sitio web hecho con cariño por el grupo 6</footer>
     </div>
   );
