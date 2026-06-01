@@ -456,13 +456,31 @@ export default function App() {
                             </tr>
                           </thead>
                           <tbody>
-                            {minute.days.map((row) => (
+                           {minute.days.map((row) => {
+                            // Determinamos qué plato mostrar según la selección del usuario
+                            let platoFondo: string = row.main;
+                            
+                            if (selectedMenu === "Vegetariano") {
+                              platoFondo = row.veg;
+                            } else if (selectedMenu === "Hipocalórico") {
+                              platoFondo = row.hypo;
+                            }
+
+                            return (
                               <tr key={row.day}>
                                 <td><strong>{row.day}</strong></td>
                                 <td>{row.entry}</td>
-                                <td>{row.main}</td>
+                                {/* Mostramos el plato dinámico */}
+                                <td>
+                                  {platoFondo}
+                                  {/* Opcional: Un pequeño indicador visual para que el usuario sepa que está viendo su menú específico */}
+                                  <div style={{ fontSize: "11px", color: "#015D8F", marginTop: "4px", fontWeight: 600 }}>
+                                    {selectedMenu !== "Común" ? `(Menú ${selectedMenu})` : ""}
+                                  </div>
+                                </td>
                               </tr>
-                            ))}
+                            );
+                          })}
                           </tbody>
                         </table>
                       </div>
