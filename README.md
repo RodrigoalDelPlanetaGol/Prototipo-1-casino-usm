@@ -25,7 +25,13 @@ npm run dev
 
 Y con eso ya tienen el npm listo y también corren el React.
 
+## Ojito
+
+Para ver la versión móvil desde un navegador en PC, se hace Ctrl+Shift+M
+
 # Cosas nuevas
+## (02/06)
+Intenté dividir el App.tsx en muchos archivos, esto para que la implementación en móvil funcione. TODAVIA NO ESTÁ TERMINADO, perdona rioseco por meterme en tus commits
 
 ## (27/05)
 tienen que hacer cd mi-proyecto y poner esto pa que la página les cargue: 
