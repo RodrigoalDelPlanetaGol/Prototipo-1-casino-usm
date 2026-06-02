@@ -1,6 +1,14 @@
 import { useMemo, useState } from "react";
 import { CalendarDays, CheckCircle2, ChevronDown, ChevronRight, HelpCircle, Menu, Plus, Save, Sparkles, X } from "lucide-react";
-
+import TopStrip from "./components/TopStrip";
+import Header from "./components/Header";
+import TabBar from "./components/TabBar";
+import MobileMenu from "./components/MobileMenu";
+import ReservationForm from "./components/ReservationForm";
+import MinutePreview from "./components/MinutePreview";
+import StatsCards from "./components/StatsCards";
+import ReservationsTable from "./components/ReservationsTable";
+import FeedbackToast from "./components/FeedbackToast";
 const BLUE = "#015D8F";
 const campuses = ["San Joaquín", "Casa Central Valparaíso", "Viña del Mar", "Concepción"];
 const menuTypes = ["Común", "Hipocalórico", "Vegetariano"];
@@ -54,16 +62,7 @@ const minuteByCampus = {
   },
 } as const;
 
-type Reservation = {
-  id: number;
-  code: string;
-  registeredAt: string;
-  from: string;
-  to: string;
-  menu: string;
-  campus: string;
-  status: string;
-};
+
 
 const initialReservations: Reservation[] = [
   {
@@ -87,7 +86,16 @@ function UsmLogo() {
     />
   );
 }
-
+export type Reservation = {
+  id: number;
+  code: string;
+  registeredAt: string;
+  from: string;
+  to: string;
+  menu: string;
+  campus: string;
+  status: string;
+};
 export default function App() {
   const [activeSection, setActiveSection] = useState("Reserva de menú");
   const [selectedCampus, setSelectedCampus] = useState<keyof typeof minuteByCampus>("San Joaquín");
@@ -174,16 +182,16 @@ export default function App() {
         body { margin: 0; font-family: 'Montserrat', Arial, Helvetica, sans-serif; background: #edf0f2; color: #1f2937; }
         button, input, select { font: inherit; }
         .app-shell { min-height: 100vh; background: #edf0f2; }
-        .container { max-width: 100%; margin: 0 auto; }
+        .container { max-width: 67%; margin: 0 auto; padding: 0 14px; }
         .top-strip { background: ${BLUE}; color: #fff; }
-        .top-strip__inner { display: flex; justify-content: space-between; align-items: center; padding: 6px 14px; font-size: 12px; font-weight: 700; }
+        .top-strip__inner { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 12px; font-weight: 700; }
         .top-strip__right { display: flex; align-items: center; gap: 16px; }
         .header { background: #fff; border-bottom: 1px solid #d8d8d8; }
-        .header__inner { display: flex; justify-content: space-between; align-items: center; padding: 14px 14px 18px; }
+        .header__inner { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 18px; }
         .brand { display: flex; align-items: center; gap: 12px; }
         .usm-logo { width: min(325px, 44vw); max-width: 100%; height: auto; max-height: 72px; display: block; }
         .menu-btn { background: ${BLUE}; color: #fff; border: 0; width: 48px; height: 48px; border-radius: 3px; display: grid; place-items: center; cursor: pointer; }
-        .main-shell { background: #fff; border: 1px solid #d8d8d8; border-top: 0; }
+        .main-shell { background: #fff; border: 1px solid #d8d8d8; border-top: 0; margin: 0 auto; }
         .main-grid { padding: 0 0 14px; }
         .tabs { display: flex; gap: 0; border-bottom: 1px solid #d8d8d8; padding-left: 0; overflow-x: auto; margin: 0 0 0 0; }
         .tab { border: 1px solid #d8d8d8; border-bottom: 0; background: #f8fafc; color: ${BLUE}; padding: 9px 16px; font-size: 14px; cursor: pointer; white-space: nowrap; border-top-left-radius: 3px; border-top-right-radius: 3px; font-family: 'Montserrat', Arial, Helvetica, sans-serif; }
