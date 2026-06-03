@@ -1,0 +1,553 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+  background: #edf0f2;
+  color: #1f2937;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: #edf0f2;
+}
+
+.container {
+  max-width: 1110px;
+  margin: 0 auto;
+  padding: 0 14px;
+}
+
+.top-strip {
+  background: #015D8F;
+  color: #fff;
+}
+
+.top-strip__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.top-strip__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header {
+  background: #fff;
+  border-bottom: 1px solid #d8d8d8;
+}
+
+.header__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 18px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.usm-logo {
+  width: min(325px, 44vw);
+  max-width: 100%;
+  height: auto;
+  max-height: 72px;
+  display: block;
+}
+
+.menu-btn {
+  background: #015D8F;
+  color: #fff;
+  border: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.main-shell {
+  background: #fff;
+  border: 1px solid #d8d8d8;
+  border-top: 0;
+  margin: 0 auto;
+}
+
+.main-grid {
+  padding: 0 0 14px;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #d8d8d8;
+  padding-left: 0;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.tab {
+  border: 1px solid #d8d8d8;
+  border-bottom: 0;
+  background: #f8fafc;
+  color: #015D8F;
+  padding: 9px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+}
+
+.tab--active {
+  background: #fff;
+  color: #334155;
+  position: relative;
+  top: 1px;
+}
+
+.content {
+  background: #fff;
+  min-height: 70vh;
+}
+
+.section {
+  padding: 18px 22px 18px;
+}
+
+.section__title {
+  font-size: 17px;
+  margin: 0;
+  color: #334155;
+  font-weight: 700;
+}
+
+.section__subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.panel {
+  border: 1px solid #d8dee5;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.panel--soft {
+  background: #f7fbfd;
+}
+
+.field-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.field-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field-grid--aside {
+  grid-template-columns: 1fr 270px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.field__label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.field__input,
+.field__select {
+  width: 100%;
+  border: 1px solid #cfd8df;
+  background: #fff;
+  color: #374151;
+  padding: 9px 12px;
+  border-radius: 2px;
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+}
+
+.field__input[readonly] {
+  background: #eceff3;
+  color: #4b5563;
+}
+
+.calendar {
+  border: 1px solid #cfd8df;
+  border-radius: 2px;
+  background: #fff;
+  padding: 14px;
+}
+
+.calendar__legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+
+.calendar-grid__head {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.calendar-day {
+  border: 1px solid #cfd8df;
+  background: #fff;
+  border-radius: 2px;
+  padding: 8px 0;
+  font-size: 14px;
+  cursor: pointer;
+  color: #334155;
+}
+
+.calendar-day--active {
+  background: #015D8F;
+  color: #fff;
+  border-color: #015D8F;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn {
+  border-radius: 2px;
+  border: 1px solid #cfd8df;
+  background: #fff;
+  color: #334155;
+  padding: 9px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+}
+
+.btn--primary {
+  background: #015D8F;
+  border-color: #015D8F;
+  color: #fff;
+}
+
+.info-card {
+  padding: 14px;
+  border: 1px solid #d8dee5;
+  border-radius: 2px;
+  background: #f7fbfd;
+  font-size: 14px;
+  color: #334155;
+}
+
+.info-card__title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat {
+  border: 1px solid #d8dee5;
+  border-radius: 2px;
+  background: #f7fbfd;
+  padding: 14px;
+  text-align: center;
+}
+
+.stat__label {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.stat__value {
+  margin-top: 4px;
+  font-size: 38px;
+  line-height: 1;
+  color: #015D8F;
+  font-weight: 700;
+}
+
+.subpanel {
+  border: 1px solid #d8dee5;
+  border-radius: 2px;
+  background: #fff;
+  padding: 14px;
+}
+
+.subpanel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.badge {
+  background: #e6f2f7;
+  color: #015D8F;
+  padding: 4px 8px;
+  border-radius: 2px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #cfd8df;
+  padding: 10px 12px;
+  vertical-align: top;
+}
+
+.table thead th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+}
+
+.table--blue thead th {
+  background: #015D8F;
+  color: #fff;
+}
+
+.table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.table tbody tr:nth-child(odd) {
+  background: #fff;
+}
+
+.mini {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.footer {
+  margin-top: 12px;
+  background: #111827;
+  color: #fff;
+  padding: 12px 16px;
+  font-size: 14px;
+}
+
+.icon-btn {
+  width: 18px;
+  height: 18px;
+}
+
+.muted {
+  color: #6b7280;
+}
+
+.helpbox {
+  margin-top: 12px;
+}
+
+.mobile-menu {
+  display: none;
+  margin: 8px 0 0;
+}
+
+.mobile-menu--open {
+  display: block;
+}
+
+.mobile-menu .sidebar__item {
+  width: 100%;
+  background: #015D8F;
+  color: #fff;
+  border: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, .12);
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+}
+
+.mobile-menu .sidebar__item--active {
+  background: #0f5f87;
+}
+
+.mobile-top-menu {
+  display: none;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #10b981;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  font-weight: 500;
+  font-size: 14px;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 1100px) {
+  .field-grid--aside {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .tabs {
+    display: none;
+  }
+
+  
+
+  .desktop-top-actions {
+    display: none;
+  } 
+
+  .mobile-menu {
+    display: block;
+    margin: 8px 0 0;
+  }
+
+  .mobile-menu--open {
+    display: block;
+  }
+  .container {
+    padding: 0 8px;
+  }
+
+  .usm-logo {
+    width: min(250px, 70vw);
+    max-height: 58px;
+  }
+
+  .field-grid--2 {
+    grid-template-columns: 1fr;
+  }
+
+  .field-grid--aside {
+    grid-template-columns: 1fr;
+  }
+
+  .field-grid {
+    gap: 10px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .header__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .section {
+    padding: 10px 8px;
+  }
+
+  .panel {
+    padding: 10px;
+  }
+
+  .calendar {
+    padding: 10px;
+  }
+
+  .calendar__legend {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .calendar-grid {
+    gap: 5px;
+  }
+
+  .calendar-grid__head {
+    font-size: 11px;
+  }
+
+  .calendar-day {
+    min-height: 48px;
+    padding: 12px 0;
+    font-size: 15px;
+  }
+
+  .desktop-top-actions {
+    display: none;
+  }
+
+  
+}

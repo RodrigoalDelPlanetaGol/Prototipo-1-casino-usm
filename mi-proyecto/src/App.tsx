@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import { useMemo, useState } from "react";
 import { CalendarDays, CheckCircle2, ChevronDown, ChevronRight, HelpCircle, Menu, Plus, Save, Sparkles, X } from "lucide-react";
 
@@ -88,11 +89,43 @@ function UsmLogo() {
   );
 }
 
+=======
+
+import { CheckCircle2, Sparkles, X } from "lucide-react";
+import { getCurrentWeekDates } from "./utils/calendar";
+import { BLUE, initialReservations, minuteByCampus } from "./data/casinoData";
+import type { Reservation } from "./types/casino";
+import "./styles/casino.css";
+import TopStrip from "./components/TopStrip";
+import Header from "./components/Header";
+import TabBar from "./components/TabBar";
+import MobileMenu from "./components/MobileMenu";
+import ReservationForm from "./components/ReservationForm";
+import MinutePreview from "./components/MinutePreview";
+import StatsCards from "./components/StatsCards";
+import ReservationsTable from "./components/ReservationsTable";
+import FeedbackToast from "./components/FeedbackToast";
+import { useEffect, useMemo, useState } from "react";
+
+>>>>>>> Stashed changes
 export default function App() {
   const [activeSection, setActiveSection] = useState("Reserva de menú");
-  const [selectedCampus, setSelectedCampus] = useState<keyof typeof minuteByCampus>("San Joaquín");
+  const [selectedCampus, setSelectedCampus] = useState("San Joaquín");
   const [selectedMenu, setSelectedMenu] = useState("Hipocalórico");
-  const [selectedDates, setSelectedDates] = useState<string[]>(["27-05-2026"]);
+  const [selectedDates, setSelectedDates] = useState<string[]>([
+  getCurrentWeekDates()[0]?.key ?? "",
+]);
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const media = window.matchMedia("(max-width: 720px)");
+
+  const update = () => setIsMobile(media.matches);
+  update();
+
+  media.addEventListener("change", update);
+  return () => media.removeEventListener("change", update);
+}, []);
   const [showMinute, setShowMinute] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [reservations, setReservations] = useState<Reservation[]>(initialReservations);
@@ -100,12 +133,18 @@ export default function App() {
   const [draftMenu, setDraftMenu] = useState("Hipocalórico");
   const [draftCampus, setDraftCampus] = useState("San Joaquín");
   const [menuOpen, setMenuOpen] = useState(false);
+<<<<<<< Updated upstream
+=======
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+>>>>>>> Stashed changes
 
-  const minute = minuteByCampus[selectedCampus];
+  const minute = minuteByCampus[selectedCampus as keyof typeof minuteByCampus];
   const availableCounts = useMemo(() => ({ almuerzos: 6, cenas: 0 }), []);
 
   const toggleDate = (date: string) => {
-    setSelectedDates((current) => (current.includes(date) ? current.filter((d) => d !== date) : [...current, date]));
+    setSelectedDates((current) =>
+      current.includes(date) ? current.filter((d) => d !== date) : [...current, date]
+    );
   };
 
   const openEdit = (reservation: Reservation) => {
@@ -117,11 +156,66 @@ export default function App() {
 
   const saveEdit = () => {
     if (editingId == null) return;
+<<<<<<< Updated upstream
     setReservations((current) => current.map((r) => (r.id === editingId ? { ...r, menu: draftMenu, campus: draftCampus, registeredAt: "Modificada ahora" } : r)));
     setEditingId(null);
   };
 
   const cancelReservation = (id: number) => setReservations((current) => current.filter((r) => r.id !== id));
+=======
+
+    setReservations((current) =>
+      current.map((r) =>
+        r.id === editingId
+          ? {
+              ...r,
+              menu: draftMenu,
+              campus: draftCampus,
+              registeredAt: "Modificada ahora",
+            }
+          : r
+      )
+    );
+
+    setEditingId(null);
+    setFeedbackMessage("Su reserva se ha editado correctamente");
+    setTimeout(() => {
+      setFeedbackMessage(null);
+    }, 3000);
+  };
+
+  const handleReserve = () => {
+    if (selectedDates.length === 0) {
+      setFeedbackMessage("Por favor, seleccione al menos un día en el calendario.");
+      setTimeout(() => setFeedbackMessage(null), 3000);
+      return;
+    }
+
+    const sortedDates = [...selectedDates].sort();
+    const fromDate = sortedDates[0];
+    const toDate = sortedDates[sortedDates.length - 1];
+
+    const newReservation: Reservation = {
+      id: Date.now(),
+      code: Math.floor(100000 + Math.random() * 900000).toString(),
+      registeredAt: "Ahora",
+      from: fromDate,
+      to: toDate,
+      menu: selectedMenu,
+      campus: selectedCampus,
+      status: "Activa",
+    };
+
+    setReservations((current) => [...current, newReservation]);
+    setSelectedDates([]);
+    setFeedbackMessage("Reserva guardada correctamente");
+    setTimeout(() => setFeedbackMessage(null), 3000);
+    setActiveSection("Mis reservas");
+  };
+
+  const cancelReservation = (id: number) =>
+    setReservations((current) => current.filter((r) => r.id !== id));
+>>>>>>> Stashed changes
 
   const selectSection = (section: string) => {
     setActiveSection(section);
@@ -130,6 +224,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
+<<<<<<< Updated upstream
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
@@ -288,25 +383,32 @@ export default function App() {
           </div>
         </div>
       </header>
+=======
+      
+
+      <TopStrip
+      />
+
+      <Header onMenuToggle={() => setMenuOpen((v) => !v)} />
+>>>>>>> Stashed changes
 
       <main className="container main-shell">
         <div className="main-grid">
-          
-          <div className={`mobile-menu ${menuOpen ? "mobile-menu--open" : ""}`}>
-            {sections.map((section) => (
-              <button
-                key={section}
-                onClick={() => selectSection(section)}
-                className={`sidebar__item ${activeSection === section ? "sidebar__item--active" : ""}`}
-              >
-                <span>{section}</span>
-              </button>
-            ))}
-          </div>
+          {!isMobile && (
+  <TabBar activeSection={activeSection} onSelectSection={setActiveSection} />
+)}
+          {isMobile && (
+  <MobileMenu
+    open={menuOpen}
+    activeSection={activeSection}
+    onSelectSection={selectSection}
+  />
+)}
 
           <section className="content">
             {activeSection === "Reserva de menú" && (
               <div className="section">
+<<<<<<< Updated upstream
                 <div className="panel" style={{ padding: 14 }}>
                   <div className="field-grid">
                     <div className="field-grid field-grid--2">
@@ -408,7 +510,43 @@ export default function App() {
                       </div>
                     </div>
                   )}
+=======
+                <ReservationForm
+                  selectedCampus={selectedCampus}
+                  setSelectedCampus={setSelectedCampus}
+                  selectedMenu={selectedMenu}
+                  setSelectedMenu={setSelectedMenu}
+                  selectedDates={selectedDates}
+                  setSelectedDates={setSelectedDates}
+                  showMinute={showMinute}
+                  setShowMinute={setShowMinute}
+                  showHelp={showHelp}
+                  setShowHelp={setShowHelp}
+                  onReserve={handleReserve}
+                />
+
+                <div className="helpbox">
+                  <StatsCards
+                    almuerzos={availableCounts.almuerzos}
+                    cenas={availableCounts.cenas}
+                  />
+>>>>>>> Stashed changes
                 </div>
+
+                {showHelp && (
+                  <div className="subpanel helpbox">
+                    <div className="info-card__title">Ayuda</div>
+                    <p className="muted">
+                      Ante cualquier problema con la interfaz, por favor contacte al grupo para una evaluación de la misma.
+                    </p>
+                  </div>
+                )}
+
+                <MinutePreview
+                  selectedCampus={selectedCampus as keyof typeof minuteByCampus}
+                  selectedMenu={selectedMenu}
+                  showMinute={showMinute}
+                />
               </div>
             )}
 
@@ -421,77 +559,67 @@ export default function App() {
 
                 <div className="field-grid field-grid--aside">
                   <div className="field-grid">
-                    <div className="stats">
-                      <div className="stat">
-                        <div className="stat__label">Almuerzos</div>
-                        <div className="stat__value">{availableCounts.almuerzos}</div>
-                      </div>
-                      <div className="stat">
-                        <div className="stat__label">Cenas</div>
-                        <div className="stat__value">{availableCounts.cenas}</div>
-                      </div>
-                    </div>
+                    <StatsCards
+                      almuerzos={availableCounts.almuerzos}
+                      cenas={availableCounts.cenas}
+                    />
 
                     {editingId != null && (
                       <div className="subpanel" style={{ background: "#f7fbfd" }}>
-                        <div className="info-card__title" style={{ color: BLUE, display: "flex", alignItems: "center", gap: 8 }}>
+                        <div
+                          className="info-card__title"
+                          style={{ color: BLUE, display: "flex", alignItems: "center", gap: 8 }}
+                        >
                           <Sparkles className="icon-btn" />
                           Edición directa de reserva
                         </div>
+
                         <div className="field-grid field-grid--2">
                           <label className="field">
                             <span className="field__label">Campus o sede</span>
-                            <select value={draftCampus} onChange={(e) => setDraftCampus(e.target.value)} className="field__select">
-                              {campuses.map((campus) => <option key={campus}>{campus}</option>)}
+                            <select
+                              value={draftCampus}
+                              onChange={(e) => setDraftCampus(e.target.value)}
+                              className="field__select"
+                            >
+                              {["San Joaquín", "Casa Central Valparaíso", "Viña del Mar", "Concepción"].map((campus) => (
+                                <option key={campus}>{campus}</option>
+                              ))}
                             </select>
                           </label>
+
                           <label className="field">
                             <span className="field__label">Menú</span>
-                            <select value={draftMenu} onChange={(e) => setDraftMenu(e.target.value)} className="field__select">
-                              {menuTypes.map((menu) => <option key={menu}>{menu}</option>)}
+                            <select
+                              value={draftMenu}
+                              onChange={(e) => setDraftMenu(e.target.value)}
+                              className="field__select"
+                            >
+                              {["Común", "Hipocalórico", "Vegetariano"].map((menu) => (
+                                <option key={menu}>{menu}</option>
+                              ))}
                             </select>
                           </label>
                         </div>
+
                         <div className="actions">
-                          <button onClick={saveEdit} className="btn btn--primary"><CheckCircle2 className="icon-btn" />Guardar cambios</button>
-                          <button onClick={() => setEditingId(null)} className="btn"><X className="icon-btn" />Cancelar edición</button>
+                          <button onClick={saveEdit} className="btn btn--primary">
+                            <CheckCircle2 className="icon-btn" />
+                            Guardar cambios
+                          </button>
+                          <button onClick={() => setEditingId(null)} className="btn">
+                            <X className="icon-btn" />
+                            Cancelar edición
+                          </button>
                         </div>
                       </div>
                     )}
 
-                    <div className="subpanel" style={{ padding: 0 }}>
-                      <table className="table" style={{ fontSize: 14 }}>
-                        <thead>
-                          <tr>
-                            <th>Acción</th>
-                            <th>Fecha registro</th>
-                            <th>Código reserva</th>
-                            <th>Fecha desde</th>
-                            <th>Fecha hasta</th>
-                            <th>Menú</th>
-                            <th>Campus/Sede reserva</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {reservations.map((reservation) => (
-                            <tr key={reservation.id}>
-                              <td>
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                                  <button onClick={() => openEdit(reservation)} className="btn btn--primary">Editar</button>
-                                  <button onClick={() => cancelReservation(reservation.id)} className="btn">Anular</button>
-                                </div>
-                              </td>
-                              <td>{reservation.registeredAt}</td>
-                              <td>{reservation.code}</td>
-                              <td>{reservation.from}</td>
-                              <td>{reservation.to}</td>
-                              <td>{reservation.menu}</td>
-                              <td>{reservation.campus}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                    <ReservationsTable
+                      reservations={reservations}
+                      onEdit={openEdit}
+                      onCancel={cancelReservation}
+                    />
                   </div>
                 </div>
               </div>
@@ -503,17 +631,13 @@ export default function App() {
                   <h1 className="section__title">Mis consumos</h1>
                   <div className="section__subtitle">Resumen histórico de uso del beneficio.</div>
                 </div>
+
                 <div className="field-grid field-grid--aside">
-                  <div className="stats">
-                    <div className="stat">
-                      <div className="stat__label">Almuerzos</div>
-                      <div className="stat__value">{availableCounts.almuerzos}</div>
-                    </div>
-                    <div className="stat">
-                      <div className="stat__label">Cenas</div>
-                      <div className="stat__value">{availableCounts.cenas}</div>
-                    </div>
-                  </div>
+                  <StatsCards
+                    almuerzos={availableCounts.almuerzos}
+                    cenas={availableCounts.cenas}
+                  />
+
                   <div className="info-card">
                     <div className="info-card__title">Vista general</div>
                     <p>Este bloque puede seguir como placeholder hasta integrar datos reales del backend.</p>
@@ -525,6 +649,11 @@ export default function App() {
         </div>
       </main>
 
+<<<<<<< Updated upstream
+=======
+      <FeedbackToast message={feedbackMessage} />
+
+>>>>>>> Stashed changes
       <footer className="footer">Sitio web hecho con cariño por el grupo 6</footer>
     </div>
   );
