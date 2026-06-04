@@ -454,44 +454,61 @@ export default function App() {
                         <h2 className="section__title" style={{ fontSize: 24, margin: 0 }}>Minuta</h2>
                         <div className="section__title">{minute.subtitle} · {selectedCampus}</div>
                       </div>
-                      <div style={{ overflowX: "auto" }}>
-                        <table className="table table--blue" style={{ minWidth: 700 }}>
-                          <thead>
-                            <tr>
-                              <th>Día</th>
-                              <th>Entrada</th>
-                              <th>Plato fondo</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                           {minute.days.map((row) => {
-                            // Determinamos qué plato mostrar según la selección del usuario
-                            let platoFondo: string = row.main;
-                            
-                            if (selectedMenu === "Vegetariano") {
-                              platoFondo = row.veg;
-                            } else if (selectedMenu === "Hipocalórico") {
-                              platoFondo = row.hypo;
-                            }
+                     <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", alignItems: "flex-start" }}>
+  
+  {/* TABLA PRINCIPAL (A la izquierda) */}
+  <div style={{ flex: "1 1 500px", overflowX: "auto" }}>
+    <table className="table table--blue" style={{ width: "100%", minWidth: 500 }}>
+      <thead>
+        <tr>
+          <th>Día</th>
+          <th>Entrada</th>
+          <th>Plato fondo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {minute.days.map((row) => {
+          let platoFondo: string = row.main;
+          if (selectedMenu === "Vegetariano") platoFondo = row.veg;
+          else if (selectedMenu === "Hipocalórico") platoFondo = row.hypo;
 
-                            return (
-                              <tr key={row.day}>
-                                <td><strong>{row.day}</strong></td>
-                                <td>{row.entry}</td>
-                                {/* Mostramos el plato dinámico */}
-                                <td>
-                                  {platoFondo}
-                                  {/* Opcional: Un pequeño indicador visual para que el usuario sepa que está viendo su menú específico */}
-                                  <div style={{ fontSize: "11px", color: "#015D8F", marginTop: "4px", fontWeight: 600 }}>
-                                    {selectedMenu !== "Común" ? `(Menú ${selectedMenu})` : ""}
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                          </tbody>
-                        </table>
-                      </div>
+          return (
+            <tr key={row.day}>
+              <td><strong>{row.day}</strong></td>
+              <td>{row.entry}</td>
+              <td>
+                {platoFondo}
+                <div style={{ fontSize: "11px", color: "#015D8F", marginTop: "4px", fontWeight: 600 }}>
+                  {selectedMenu !== "Común" ? `(Menú ${selectedMenu})` : ""}
+                </div>
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+
+  {/* TABLA DE ALÉRGENOS (A la derecha) */}
+  <div style={{ flex: "0 0 250px", width: "100%" }}>
+    <div className="info-card" style={{ padding: "0", overflow: "hidden" }}>
+      <div style={{ background: "#f1f5f9", padding: "10px 12px", borderBottom: "1px solid #cfd8df", fontWeight: 700, fontSize: "13px", color: "#334155" }}>
+        Alérgenos del día
+      </div>
+      <table className="table" style={{ fontSize: "12px", border: "none" }}>
+        <tbody>
+          {minute.days.map((row) => (
+            <tr key={`allergen-${row.day}`}>
+              <td style={{ borderLeft: "none", width: "40px" }}><strong>{row.day.substring(0, 2)}</strong></td>
+              <td style={{ borderRight: "none", color: "#dc2626", fontWeight: 500 }}>{row.allergens}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
                     </div>
                   )}
                 </div>
