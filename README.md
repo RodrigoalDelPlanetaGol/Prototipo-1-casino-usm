@@ -33,7 +33,7 @@ npm install lucide-react
 creo que todos tienen que hacerlo.
 recuerden poner el Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass antes de instalar
 
-# Pa que sirve cada archivo/cosa que hay en el repositorio
+# Para que sirve cada archivo/cosa que hay en el repositorio
 
 ### `README.md`
 Archivo que ahora están leyendo. PONGAN TODO LO QUE HAGAN PLSSS
