@@ -25,26 +25,29 @@ npm run dev
 
 Y con eso ya tienen el npm listo y también corren el React.
 
-# Cosas nuevas
+# Actualizaciones
 
 ## (27/05)
 tienen que hacer cd mi-proyecto y poner esto pa que la página les cargue: 
+
 npm install lucide-react
+
 creo que todos tienen que hacerlo.
 recuerden poner el Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass antes de instalar
 
 # Para que sirve cada archivo/cosa que hay en el repositorio
 
 ### `README.md`
-Archivo que ahora están leyendo. PONGAN TODO LO QUE HAGAN PLSSS
+Archivo que ahora están leyendo. Contiene las instrucciones para inicializar el proyecto, sus actualizaciones, e informaciones varias.
 
 ### `node_modules/`
 Carpeta donde se instalan todas las dependencias del proyecto.  
-Se genera automáticamente con `npm install` y normalmente **no se hace nada con esto**.
+Se genera automáticamente con `npm install` y no se hace nada con esto.
 
 ### `public/`
-Contiene archivos estáticos que se sirven tal cual, sin pasar por el proceso de compilación de React/Vite.
+Contiene archivos estáticos que se sirven tal cual, sin pasar por el proceso de compilación de React/Vite. Actualmente solo guarda el logo de la universidad.
 
+- `img/logousm.svg`: logo de la universidad.
 - `favicon.svg`: ícono que aparece en la pestaña del navegador.
 - `icons.svg`: recurso gráfico estático incluido en el proyecto.
 
@@ -52,7 +55,10 @@ Contiene archivos estáticos que se sirven tal cual, sin pasar por el proceso de
 Es el corazón de la aplicación. Aquí vive la mayor parte del código React.
 
 - `assets/`: carpeta para imágenes, íconos y otros recursos internos usados por la app.
-- `App.tsx`: componente principal de la aplicación. Suele contener la estructura base de la interfaz. Creo que aqui se edita LA pagina que tenemos
+- `components/`: códigos variados de cada funcionalidad que tiene la página, como por ejemplo, el Header y la visualización en móvil.
+- `data/`: aqui se encuentra 'casinoData.ts' y contiene datos de prueba de la aplicación.
+- `utils/`: Lógica del calendario reactivo en 'calendar.ts'.
+- `App.tsx`: componente principal de la aplicación. Contiene la estructura base de la interfaz y aqui se unen todos los componentes y funcionalidades de la página.
 - `App.css`: estilos específicos del componente `App`.
 - `index.css`: estilos globales de la aplicación.
 - `main.tsx`: punto de entrada de React. Aquí se monta la app en el DOM y se renderiza `App`.
