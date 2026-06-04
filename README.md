@@ -1,4 +1,13 @@
-# Prototipo-1-casino-usm
+# Prototipo-1-casino-usm Grupo 6
+Integrantes (Nombre y Rol):
+
+-Rodrigo Cáceres, 202273616-k
+
+-Cristian Rioseco, 202204507-8
+
+-Sergio Rojas, 202273619-4
+
+
 Este git lo hice para empezar el prototipo react.
 Para empezar a trabajar con esto, primero que todo abren el repositorio con GitHub Desktop y abren el repositorio en VSCode, y una vez que abran una terminal 'powershell', hacen 'cd mi-proyecto', Copian y pegan este comando en la misma terminal:
 
