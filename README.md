@@ -9,7 +9,7 @@ Integrantes (Nombre y Rol):
 
 
 Este git lo hice para empezar el prototipo react.
-Para empezar a trabajar con esto, primero que todo abren el repositorio con GitHub Desktop y abren el repositorio en VSCode, y una vez que abran una terminal 'powershell', hacen 'cd mi-proyecto', Copian y pegan este comando en la misma terminal:
+Para empezar a trabajar con esto, primero que todo abren el repositorio con GitHub Desktop y abren el repositorio en VSCode, y una vez que abran una terminal 'powershell', copian y pegan este comando en la misma terminal:
 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
