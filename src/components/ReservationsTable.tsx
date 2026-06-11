@@ -6,6 +6,12 @@ type ReservationsTableProps = {
   onCancel: (id: number) => void;
 };
 
+function formatDates(dates?: string[]) {
+  if (!Array.isArray(dates) || dates.length === 0) return "-";
+  if (dates.length === 1) return dates[0];
+  return dates.join(", ");
+}
+
 export default function ReservationsTable({
   reservations,
   onEdit,
@@ -19,8 +25,7 @@ export default function ReservationsTable({
             <th>Acción</th>
             <th>Fecha registro</th>
             <th>Código reserva</th>
-            <th>Fecha desde</th>
-            <th>Fecha hasta</th>
+            <th>Fechas reservadas</th>
             <th>Menú</th>
             <th>Campus/Sede reserva</th>
           </tr>
@@ -40,8 +45,7 @@ export default function ReservationsTable({
               </td>
               <td>{reservation.registeredAt}</td>
               <td>{reservation.code}</td>
-              <td>{reservation.from}</td>
-              <td>{reservation.to}</td>
+              <td>{formatDates(reservation.dates)}</td>
               <td>{reservation.menu}</td>
               <td>{reservation.campus}</td>
             </tr>

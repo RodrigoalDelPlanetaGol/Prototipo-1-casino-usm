@@ -3,9 +3,10 @@ import UsmLogo from "./UsmLogo";
 
 type HeaderProps = {
   onMenuToggle: () => void;
+  showMenuButton: boolean;
 };
 
-export default function Header({ onMenuToggle }: HeaderProps) {
+export default function Header({ onMenuToggle, showMenuButton }: HeaderProps) {
   return (
     <header className="header">
       <div className="container header__inner">
@@ -13,9 +14,11 @@ export default function Header({ onMenuToggle }: HeaderProps) {
           <UsmLogo />
         </div>
 
-        <button className="menu-btn" aria-label="Menú" onClick={onMenuToggle}>
-          <Menu className="icon-btn" />
-        </button>
+        {showMenuButton && (
+          <button className="menu-btn" aria-label="Menú" onClick={onMenuToggle}>
+            <Menu className="icon-btn" />
+          </button>
+        )}
       </div>
     </header>
   );

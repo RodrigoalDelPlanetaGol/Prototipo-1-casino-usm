@@ -1,6 +1,7 @@
 import { CalendarDays, ChevronDown, ChevronRight, HelpCircle, Plus } from "lucide-react";
 import { getCurrentWeekDates, getCurrentWeekLabel } from "../utils/calendar";
 import { campuses, menuTypes } from "../data/casinoData";
+import { canReserveSpecialMenu } from "../utils/reservationRules";
 
 type ReservationFormProps = {
   selectedCampus: string;
@@ -37,6 +38,10 @@ export default function ReservationForm({
       current.includes(date) ? current.filter((d) => d !== date) : [...current, date]
     );
   };
+  const hasBlockedSpecialMenu =
+  selectedDates.length > 0 &&
+  (selectedMenu === "Vegetariano" || selectedMenu === "Hipocalórico") &&
+  !selectedDates.every((date) => canReserveSpecialMenu(selectedMenu, date));
 
   return (
     <div className="section">
@@ -124,21 +129,33 @@ export default function ReservationForm({
           </div>
 
           <div className="actions">
-            <button onClick={onReserve} className="btn btn--primary">
-              <Plus className="icon-btn" />
-              Reservar
-            </button>
+  <div className="reserve-action-group">
+    <button
+      onClick={onReserve}
+      className={`btn btn--primary ${hasBlockedSpecialMenu ? "btn--primary--blocked" : ""}`}
+      disabled={hasBlockedSpecialMenu}
+    >
+      <Plus className="icon-btn" />
+      Reservar
+    </button>
 
-            <button onClick={() => setShowMinute((v) => !v)} className="btn">
-              {showMinute ? <ChevronDown className="icon-btn" /> : <ChevronRight className="icon-btn" />}
-              {showMinute ? "Ocultar minuta" : "Mostrar minuta"}
-            </button>
+    {hasBlockedSpecialMenu && (
+      <div className="reserve-warning">
+        Los menús vegetariano e hipocalórico solo se pueden reservar hasta las 16:00 del día hábil anterior.
+      </div>
+    )}
+  </div>
 
-            <button onClick={() => setShowHelp((v) => !v)} className="btn">
-              <HelpCircle className="icon-btn" />
-              Ayuda
-            </button>
-          </div>
+  <button onClick={() => setShowMinute((v) => !v)} className="btn">
+    {showMinute ? <ChevronDown className="icon-btn" /> : <ChevronRight className="icon-btn" />}
+    {showMinute ? "Ocultar minuta" : "Mostrar minuta"}
+  </button>
+
+  <button onClick={() => setShowHelp((v) => !v)} className="btn">
+    <HelpCircle className="icon-btn" />
+    Ayuda
+  </button>
+</div>
         </div>
       </div>
     </div>

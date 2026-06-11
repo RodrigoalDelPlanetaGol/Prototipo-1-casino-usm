@@ -108,10 +108,15 @@ select {
   gap: 0;
   border-bottom: 1px solid #d8d8d8;
   padding-left: 0;
-  overflow-x: auto;
+  overflow-x: hidden;
   margin: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
+.tabs::-webkit-scrollbar {
+  display: none;
+}
 .tab {
   border: 1px solid #d8d8d8;
   border-bottom: 0;
@@ -259,7 +264,41 @@ select {
   padding-top: 12px;
   border-top: 1px solid #e5e7eb;
 }
+.reserve-action-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex: 0 1 auto;
+  max-width: 360px;
+  min-width: 0;
+}
 
+.reserve-action-group .btn--primary {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.reserve-warning {
+  max-width: 100%;
+  color: #b91c1c;
+  font-size: 13px;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.btn--primary--blocked {
+  background: #8a8f98;
+  border-color: #8a8f98;
+  color: #fff;
+}
+
+.btn--primary--blocked:hover {
+  background: #5b6470;
+  border-color: #5b6470;
+}
 .btn {
   border-radius: 2px;
   border: 1px solid #cfd8df;
@@ -468,21 +507,25 @@ select {
   .tabs {
     display: none;
   }
+  actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
+  .reserve-action-group,
+  .reserve-action-group .btn--primary,
+  .btn {
+    width: 100%;
+  }
   
 
   .desktop-top-actions {
     display: none;
   } 
 
-  .mobile-menu {
-    display: block;
-    margin: 8px 0 0;
-  }
 
-  .mobile-menu--open {
-    display: block;
-  }
+
+
   .container {
     padding: 0 8px;
   }
@@ -548,6 +591,23 @@ select {
   .desktop-top-actions {
     display: none;
   }
+  .top-strip__desktop-actions {
+    display: none;
+  }
 
+  .reserve-action-group {
+  width: 100%;
+  max-width: 100%;
+}
+
+.reserve-action-group .btn--primary {
+  width: 100%;
+}
+
+.reserve-warning {
+  width: 100%;
+  font-size: 12px;
+  text-align: left;
+}
   
 }

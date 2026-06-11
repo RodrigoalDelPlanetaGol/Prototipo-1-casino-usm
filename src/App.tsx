@@ -5,7 +5,7 @@ import { getCurrentWeekDates } from "./utils/calendar";
 import { BLUE, initialReservations, minuteByCampus } from "./data/casinoData";
 import type { Reservation } from "./types/casino";
 import "./styles/casino.css";
-
+import { canReserveSpecialMenu } from "./utils/reservationRules";
 import TopStrip from "./components/TopStrip";
 import Header from "./components/Header";
 import TabBar from "./components/TabBar";
@@ -19,6 +19,7 @@ import FeedbackToast from "./components/FeedbackToast";
 const sections = ["Reserva de menú", "Mis reservas", "Mis consumos"];
 
 export default function App() {
+  const [draftDate, setDraftDate] = useState("");
   const [activeSection, setActiveSection] = useState("Reserva de menú");
   const [selectedCampus, setSelectedCampus] = useState("San Joaquín");
   const [selectedMenu, setSelectedMenu] = useState("Hipocalórico");
@@ -26,6 +27,15 @@ export default function App() {
     getCurrentWeekDates()[0]?.key ?? "",
   ]);
   const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+  const media = window.matchMedia("(max-width: 720px)");
+
+  const update = () => setIsMobile(media.matches);
+  update();
+
+  media.addEventListener("change", update);
+  return () => media.removeEventListener("change", update);
+  }, []);
   const [showMinute, setShowMinute] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [reservations, setReservations] = useState<Reservation[]>(initialReservations);
@@ -65,55 +75,77 @@ export default function App() {
     setEditingId(reservation.id);
     setDraftMenu(reservation.menu);
     setDraftCampus(reservation.campus);
+    setDraftDate(reservation.dates[0] ?? "");
     setActiveSection("Mis reservas");
   };
 
   const saveEdit = () => {
-    if (editingId == null) return;
+  if (editingId == null) return;
 
-    setReservations((current) =>
-      current.map((r) =>
-        r.id === editingId
-          ? {
-              ...r,
-              menu: draftMenu,
-              campus: draftCampus,
-              registeredAt: "Modificada ahora",
-            }
-          : r
-      )
-    );
+  setReservations((current) =>
+    current.map((r) =>
+      r.id === editingId
+        ? {
+            ...r,
+            menu: draftMenu,
+            campus: draftCampus,
+            dates: draftDate ? [draftDate] : r.dates,
+            registeredAt: "Modificada ahora",
+          }
+        : r
+    )
+  );
 
-    setEditingId(null);
-    showFeedback("Su reserva se ha editado correctamente");
-  };
+  setEditingId(null);
+  setFeedbackMessage("Su reserva se ha editado correctamente");
+  setTimeout(() => {
+    setFeedbackMessage(null);
+  }, 3000);
+};
 
   const handleReserve = () => {
-    if (selectedDates.length === 0) {
-      showFeedback("Por favor, seleccione al menos un día en el calendario.");
-      return;
-    }
+  if (selectedDates.length === 0) {
+    setFeedbackMessage("Por favor, seleccione al menos un día en el calendario.");
+    setTimeout(() => setFeedbackMessage(null), 3000);
+    return;
+  }
 
-    const sortedDates = [...selectedDates].sort();
-    const fromDate = sortedDates[0];
-    const toDate = sortedDates[sortedDates.length - 1];
+  const blocked = selectedDates.some(
+    (date) =>
+      (selectedMenu === "Vegetariano" || selectedMenu === "Hipocalórico") &&
+      !canReserveSpecialMenu(selectedMenu, date)
+  );
 
-    const newReservation: Reservation = {
-      id: Date.now(),
-      code: Math.floor(100000 + Math.random() * 900000).toString(),
-      registeredAt: "Ahora",
-      from: fromDate,
-      to: toDate,
-      menu: selectedMenu,
-      campus: selectedCampus,
-      status: "Activa",
-    };
+  if (blocked) {
+    setFeedbackMessage(
+      "Los menús vegetariano e hipocalórico solo se pueden reservar hasta las 16:00 del día hábil anterior."
+    );
+    setTimeout(() => setFeedbackMessage(null), 3000);
+    return;
+  }
 
-    setReservations((current) => [...current, newReservation]);
-    setSelectedDates([]);
-    showFeedback("Reserva guardada correctamente");
-    setActiveSection("Mis reservas");
+  const sortedDates = [...selectedDates].sort((a, b) => {
+    const [da, ma, ya] = a.split("-").map(Number);
+    const [db, mb, yb] = b.split("-").map(Number);
+    return new Date(ya, ma - 1, da).getTime() - new Date(yb, mb - 1, db).getTime();
+  });
+
+  const newReservation: Reservation = {
+    id: Date.now(),
+    code: Math.floor(100000 + Math.random() * 900000).toString(),
+    registeredAt: "Ahora",
+    dates: sortedDates,
+    menu: selectedMenu,
+    campus: selectedCampus,
+    status: "Activa",
   };
+
+  setReservations((current) => [...current, newReservation]);
+  setSelectedDates([]);
+  setFeedbackMessage("Reserva guardada correctamente");
+  setTimeout(() => setFeedbackMessage(null), 3000);
+  setActiveSection("Mis reservas");
+};
 
   const cancelReservation = (id: number) => {
     setReservations((current) => current.filter((r) => r.id !== id));
@@ -128,7 +160,7 @@ export default function App() {
     <div className="app-shell">
       <TopStrip />
 
-      <Header onMenuToggle={() => setMenuOpen((v) => !v)} />
+      <Header onMenuToggle={() => setMenuOpen((v) => !v)} showMenuButton={isMobile} />
 
       <main className="container main-shell">
         <div className="main-grid">
@@ -246,6 +278,15 @@ export default function App() {
                                 <option key={menu}>{menu}</option>
                               ))}
                             </select>
+                          </label>
+                          <label className="field">
+                            <span className="field__label">Fecha de reserva</span>
+                            <input
+                              type="date"
+                              value={draftDate}
+                              onChange={(e) => setDraftDate(e.target.value)}
+                              className="field__input"
+                            />
                           </label>
                         </div>
 
