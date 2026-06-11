@@ -35,6 +35,10 @@ npm run dev
 Y con eso ya tienen el npm listo y también corren el React.
 
 # Actualizaciones
+## (10/06)
+
+La paagina ahora se abre con este link (en locaal): http://localhost:5173/Prototipo-1-casino-usm/
+Y para la páginaaa web, se hace con este link: https://rodrigoaldelplanetagol.github.io/Prototipo-1-casino-usm/
 
 ## (27/05)
 tienen que hacer cd mi-proyecto y poner esto pa que la página les cargue: 
