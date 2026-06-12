@@ -26,6 +26,8 @@ select {
 .app-shell {
   min-height: 100vh;
   background: #edf0f2;
+  display: flex;
+  flex-direction: column;
 }
 
 .container {
@@ -97,6 +99,7 @@ select {
   border: 1px solid #d8d8d8;
   border-top: 0;
   margin: 0 auto;
+  flex: 1;
 }
 
 .main-grid {
@@ -140,7 +143,7 @@ select {
 
 .content {
   background: #fff;
-  min-height: 70vh;
+  min-height: 0;
 }
 
 .section {
@@ -217,6 +220,7 @@ select {
   border-radius: 2px;
   background: #fff;
   padding: 14px;
+  width: 100%;
 }
 
 .calendar__legend {
@@ -420,11 +424,26 @@ select {
 }
 
 .footer {
-  margin-top: 12px;
+  width: 100%;
+  margin-top: auto;
+  padding: 12px 12px 16px;
+}
+
+.footer__inner {
+  width: min(1700px, calc(100vw - 24px));
+  margin: 0 auto;
+}
+
+.footer__pill {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
   background: #111827;
   color: #fff;
-  padding: 12px 16px;
+  padding: 8px 12px;
   font-size: 14px;
+  line-height: 1.2;
+  border-radius: 2px;
 }
 
 .icon-btn {
@@ -524,6 +543,8 @@ select {
   position: sticky;
   top: 16px;
   align-self: start;
+  max-height: calc(100vh - 160px);
+  overflow: auto;
 }
 
 @media (max-width: 720px) {
@@ -835,7 +856,9 @@ select {
 .minute-panel--allergens {
   min-width: 0;
 }
-
+.reservation-stats-block {
+  margin-top: 12px;
+}
 @media (min-width: 1101px) {
   .minute-grid {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
@@ -850,8 +873,16 @@ select {
     max-height: none;
     overflow: visible;
   }
+  .calendar-months {
+    gap: 16px;
+  }
+  .reservation-mobile-minute {
+    display: none;
+  }
 }
-
+.reservation-mobile-minute {
+  margin-top: 12px;
+}
 @media (max-width: 1100px) {
   .minute-grid {
     display: block;
@@ -862,5 +893,84 @@ select {
     max-height: none;
     overflow: visible;
     margin-top: 12px;
+  }
+}
+
+.calendar-months {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.calendar-month {
+  border: 1px solid #cfd8df;
+  border-radius: 2px;
+  background: #fff;
+  padding: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.calendar-month__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: capitalize;
+  margin-bottom: 10px;
+}
+
+.calendar-month__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.calendar-month__weekday {
+  text-align: center;
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.calendar-grid--month {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+
+.calendar-day {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.calendar-day--disabled {
+  background: #f8fafc;
+  color: #cbd5e1;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.calendar-day--empty {
+  border-color: transparent;
+  background: transparent;
+  pointer-events: none;
+}
+
+.calendar-day--empty {
+  border-color: transparent;
+  background: transparent;
+  pointer-events: none;
+}
+
+@media (max-width: 1280px) {
+  .calendar-months {
+    grid-template-columns: 1fr;
   }
 }

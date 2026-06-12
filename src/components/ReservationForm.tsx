@@ -1,7 +1,7 @@
-import { CalendarDays, ChevronDown, ChevronRight, HelpCircle, Plus } from "lucide-react";
-import { getCurrentWeekDates, getCurrentWeekLabel } from "../utils/calendar";
+import { ChevronDown, ChevronRight, HelpCircle, Plus } from "lucide-react";
 import { campuses, menuTypes } from "../data/casinoData";
 import { canReserveSpecialMenu } from "../utils/reservationRules";
+import ReservationCalendar from "./ReservationCalendar";
 
 type ReservationFormProps = {
   selectedCampus: string;
@@ -30,18 +30,16 @@ export default function ReservationForm({
   setShowHelp,
   onReserve,
 }: ReservationFormProps) {
-  const currentWeekDates = getCurrentWeekDates();
-  const currentWeekLabel = getCurrentWeekLabel(currentWeekDates);
-
   const toggleDate = (date: string) => {
     setSelectedDates((current) =>
       current.includes(date) ? current.filter((d) => d !== date) : [...current, date]
     );
   };
+
   const hasBlockedSpecialMenu =
-  selectedDates.length > 0 &&
-  (selectedMenu === "Vegetariano" || selectedMenu === "Hipocalórico") &&
-  !selectedDates.every((date) => canReserveSpecialMenu(selectedMenu, date));
+    selectedDates.length > 0 &&
+    (selectedMenu === "Vegetariano" || selectedMenu === "Hipocalórico") &&
+    !selectedDates.every((date) => canReserveSpecialMenu(selectedMenu, date));
 
   return (
     <div className="section">
@@ -95,67 +93,41 @@ export default function ReservationForm({
             </label>
           </div>
 
-          <div className="field-grid field-grid--aside">
-            <div>
-              <div className="calendar">
-                <div className="calendar__legend">
-                  <CalendarDays className="icon-btn" />
-                  Semana actual · {currentWeekLabel}
-                </div>
-
-                <div className="calendar-grid">
-  {currentWeekDates.map((day) => (
-    <div key={`${day.key}-head`} className="calendar-grid__head">
-      {day.weekday}
-    </div>
-  ))}
-
-  {currentWeekDates.map((day) => {
-    const active = selectedDates.includes(day.key);
-
-    return (
-      <button
-        key={day.key}
-        onClick={() => toggleDate(day.key)}
-        className={`calendar-day ${active ? "calendar-day--active" : ""}`}
-      >
-        {day.label}
-      </button>
-    );
-  })}
-</div>
-              </div>
-            </div>
-          </div>
+          <ReservationCalendar
+            selectedDates={selectedDates}
+            onToggleDate={toggleDate}
+            legend="Selecciona fechas para reservar"
+          />
 
           <div className="actions">
-  <div className="reserve-action-group">
-    <button
-      onClick={onReserve}
-      className={`btn btn--primary ${hasBlockedSpecialMenu ? "btn--primary--blocked" : ""}`}
-      disabled={hasBlockedSpecialMenu}
-    >
-      <Plus className="icon-btn" />
-      Reservar
-    </button>
+            <div className="reserve-action-group">
+              <button
+                onClick={onReserve}
+                className={`btn btn--primary ${hasBlockedSpecialMenu ? "btn--primary--blocked" : ""}`}
+                disabled={hasBlockedSpecialMenu}
+                type="button"
+              >
+                <Plus className="icon-btn" />
+                Reservar
+              </button>
 
-    {hasBlockedSpecialMenu && (
-      <div className="reserve-warning">
-        Los menús vegetariano e hipocalórico solo se pueden reservar hasta las 16:00 del día hábil anterior.
-      </div>
-    )}
-  </div>
+              {hasBlockedSpecialMenu && (
+                <div className="reserve-warning">
+                  Los menús vegetariano e hipocalórico solo se pueden reservar hasta las 16:00 del día hábil anterior.
+                </div>
+              )}
+            </div>
 
-  <button onClick={() => setShowMinute((v) => !v)} className="btn">
-    {showMinute ? <ChevronDown className="icon-btn" /> : <ChevronRight className="icon-btn" />}
-    {showMinute ? "Ocultar minuta" : "Mostrar minuta"}
-  </button>
+            <button onClick={() => setShowMinute((v) => !v)} className="btn" type="button">
+              {showMinute ? <ChevronDown className="icon-btn" /> : <ChevronRight className="icon-btn" />}
+              {showMinute ? "Ocultar minuta" : "Mostrar minuta"}
+            </button>
 
-  <button onClick={() => setShowHelp((v) => !v)} className="btn">
-    <HelpCircle className="icon-btn" />
-    Ayuda
-  </button>
-</div>
+            <button onClick={() => setShowHelp((v) => !v)} className="btn" type="button">
+              <HelpCircle className="icon-btn" />
+              Ayuda
+            </button>
+          </div>
         </div>
       </div>
     </div>

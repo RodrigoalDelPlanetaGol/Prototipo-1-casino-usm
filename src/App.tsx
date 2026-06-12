@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Sparkles, X } from "lucide-react";
 
-import { getCurrentWeekDates } from "./utils/calendar";
+import { getFirstSelectableDateKey, isSelectableDateKey } from "./utils/calendar";
+import ReservationCalendar from "./components/ReservationCalendar";
 import { BLUE, initialReservations, minuteByCampus } from "./data/casinoData";
 import type { Reservation } from "./types/casino";
 import "./styles/casino.css";
 import { canReserveSpecialMenu } from "./utils/reservationRules";
+
 import TopStrip from "./components/TopStrip";
 import Header from "./components/Header";
 import TabBar from "./components/TabBar";
@@ -18,24 +20,20 @@ import FeedbackToast from "./components/FeedbackToast";
 
 const sections = ["Reserva de menú", "Mis reservas", "Mis consumos"];
 
+function sortDateKeys(dates: string[]) {
+  return [...dates].sort((a, b) => {
+    const [da, ma, ya] = a.split("-").map(Number);
+    const [db, mb, yb] = b.split("-").map(Number);
+    return new Date(ya, ma - 1, da).getTime() - new Date(yb, mb - 1, db).getTime();
+  });
+}
+
 export default function App() {
-  const [draftDate, setDraftDate] = useState("");
   const [activeSection, setActiveSection] = useState("Reserva de menú");
   const [selectedCampus, setSelectedCampus] = useState("San Joaquín");
   const [selectedMenu, setSelectedMenu] = useState("Hipocalórico");
-  const [selectedDates, setSelectedDates] = useState<string[]>([
-    getCurrentWeekDates()[0]?.key ?? "",
-  ]);
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-  const media = window.matchMedia("(max-width: 720px)");
-
-  const update = () => setIsMobile(media.matches);
-  update();
-
-  media.addEventListener("change", update);
-  return () => media.removeEventListener("change", update);
-  }, []);
+  const [selectedDates, setSelectedDates] = useState<string[]>([getFirstSelectableDateKey()]);
+  const [draftSelectedDates, setDraftSelectedDates] = useState<string[]>([]);
   const [showMinute, setShowMinute] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [reservations, setReservations] = useState<Reservation[]>(initialReservations);
@@ -44,6 +42,7 @@ export default function App() {
   const [draftCampus, setDraftCampus] = useState("San Joaquín");
   const [menuOpen, setMenuOpen] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 720px)");
@@ -71,81 +70,109 @@ export default function App() {
     );
   };
 
+  const toggleDraftDate = (date: string) => {
+    setDraftSelectedDates((current) =>
+      current.includes(date) ? current.filter((d) => d !== date) : [...current, date]
+    );
+  };
+
   const openEdit = (reservation: Reservation) => {
     setEditingId(reservation.id);
     setDraftMenu(reservation.menu);
     setDraftCampus(reservation.campus);
-    setDraftDate(reservation.dates[0] ?? "");
+    setDraftSelectedDates(reservation.dates);
     setActiveSection("Mis reservas");
   };
 
   const saveEdit = () => {
-  if (editingId == null) return;
+    if (editingId == null) return;
 
-  setReservations((current) =>
-    current.map((r) =>
-      r.id === editingId
-        ? {
-            ...r,
-            menu: draftMenu,
-            campus: draftCampus,
-            dates: draftDate ? [draftDate] : r.dates,
-            registeredAt: "Modificada ahora",
-          }
-        : r
-    )
-  );
+    if (draftSelectedDates.length === 0) {
+      showFeedback("Debes seleccionar al menos una fecha para guardar la edición.");
+      return;
+    }
 
-  setEditingId(null);
-  setFeedbackMessage("Su reserva se ha editado correctamente");
-  setTimeout(() => {
-    setFeedbackMessage(null);
-  }, 3000);
-};
+    const invalidDates = draftSelectedDates.filter((date) => !isSelectableDateKey(date));
+    if (invalidDates.length > 0) {
+      showFeedback("No puedes guardar fechas pasadas ni fines de semana.");
+      return;
+    }
 
-  const handleReserve = () => {
-  if (selectedDates.length === 0) {
-    setFeedbackMessage("Por favor, seleccione al menos un día en el calendario.");
-    setTimeout(() => setFeedbackMessage(null), 3000);
-    return;
-  }
-
-  const blocked = selectedDates.some(
-    (date) =>
-      (selectedMenu === "Vegetariano" || selectedMenu === "Hipocalórico") &&
-      !canReserveSpecialMenu(selectedMenu, date)
-  );
-
-  if (blocked) {
-    setFeedbackMessage(
-      "Los menús vegetariano e hipocalórico solo se pueden reservar hasta las 16:00 del día hábil anterior."
+    const blocked = draftSelectedDates.some(
+      (date) =>
+        (draftMenu === "Vegetariano" || draftMenu === "Hipocalórico") &&
+        !canReserveSpecialMenu(draftMenu, date)
     );
-    setTimeout(() => setFeedbackMessage(null), 3000);
-    return;
-  }
 
-  const sortedDates = [...selectedDates].sort((a, b) => {
-    const [da, ma, ya] = a.split("-").map(Number);
-    const [db, mb, yb] = b.split("-").map(Number);
-    return new Date(ya, ma - 1, da).getTime() - new Date(yb, mb - 1, db).getTime();
-  });
+    if (blocked) {
+      showFeedback(
+        "Los menús vegetariano e hipocalórico solo se pueden reservar hasta las 16:00 del día hábil anterior."
+      );
+      return;
+    }
 
-  const newReservation: Reservation = {
-    id: Date.now(),
-    code: Math.floor(100000 + Math.random() * 900000).toString(),
-    registeredAt: "Ahora",
-    dates: sortedDates,
-    menu: selectedMenu,
-    campus: selectedCampus,
-    status: "Activa",
+    const sortedDates = sortDateKeys(draftSelectedDates);
+
+    setReservations((current) =>
+      current.map((r) =>
+        r.id === editingId
+          ? {
+              ...r,
+              menu: draftMenu,
+              campus: draftCampus,
+              dates: sortedDates,
+              registeredAt: "Modificada ahora",
+            }
+          : r
+      )
+    );
+
+    setEditingId(null);
+    showFeedback("Su reserva se ha editado correctamente");
   };
 
-  setReservations((current) => [...current, newReservation]);
-  setSelectedDates([]);
-  setFeedbackMessage("Reserva guardada correctamente");
-  setTimeout(() => setFeedbackMessage(null), 3000);
-  setActiveSection("Mis reservas");
-};
+  const handleReserve = () => {
+    if (selectedDates.length === 0) {
+      showFeedback("Por favor, seleccione al menos un día en el calendario.");
+      return;
+    }
+
+    const invalidDates = selectedDates.filter((date) => !isSelectableDateKey(date));
+    if (invalidDates.length > 0) {
+      showFeedback("No puedes reservar fechas pasadas ni fines de semana.");
+      return;
+    }
+
+    const blocked = selectedDates.some(
+      (date) =>
+        (selectedMenu === "Vegetariano" || selectedMenu === "Hipocalórico") &&
+        !canReserveSpecialMenu(selectedMenu, date)
+    );
+
+    if (blocked) {
+      showFeedback(
+        "Los menús vegetariano e hipocalórico solo se pueden reservar hasta las 16:00 del día hábil anterior."
+      );
+      return;
+    }
+
+    const sortedDates = sortDateKeys(selectedDates);
+
+    const newReservation: Reservation = {
+      id: Date.now(),
+      code: Math.floor(100000 + Math.random() * 900000).toString(),
+      registeredAt: "Ahora",
+      dates: sortedDates,
+      menu: selectedMenu,
+      campus: selectedCampus,
+      status: "Activa",
+    };
+
+    setReservations((current) => [...current, newReservation]);
+    setSelectedDates([]);
+    showFeedback("Reserva guardada correctamente");
+    setActiveSection("Mis reservas");
+  };
 
   const cancelReservation = (id: number) => {
     setReservations((current) => current.filter((r) => r.id !== id));
@@ -164,66 +191,67 @@ export default function App() {
 
       <main className="container main-shell">
         <div className="main-grid">
-          {!isMobile && (
-            <TabBar activeSection={activeSection} onSelectSection={setActiveSection} />
-          )}
+          {!isMobile && <TabBar activeSection={activeSection} onSelectSection={setActiveSection} />}
 
           {isMobile && (
-            <MobileMenu
-              open={menuOpen}
-              activeSection={activeSection}
-              onSelectSection={selectSection}
-            />
+            <MobileMenu open={menuOpen} activeSection={activeSection} onSelectSection={selectSection} />
           )}
 
           <section className="content">
             {activeSection === "Reserva de menú" && (
-  <div className="section">
-    <div className="reservation-layout">
-      <div className="reservation-layout__main">
-        <ReservationForm
-          selectedCampus={selectedCampus}
-          setSelectedCampus={setSelectedCampus}
+              <div className="section">
+                <div className="reservation-layout">
+                  <div className="reservation-layout__main">
+                    <ReservationForm
+                      selectedCampus={selectedCampus}
+                      setSelectedCampus={setSelectedCampus}
+                      selectedMenu={selectedMenu}
+                      setSelectedMenu={setSelectedMenu}
+                      selectedDates={selectedDates}
+                      setSelectedDates={setSelectedDates}
+                      showMinute={showMinute}
+                      setShowMinute={setShowMinute}
+                      showHelp={showHelp}
+                      setShowHelp={setShowHelp}
+                      onReserve={handleReserve}
+                    />
+
+                    <div className="reservation-stats-block">
+                      <StatsCards almuerzos={availableCounts.almuerzos} cenas={availableCounts.cenas} />
+                    </div>
+
+                    {showHelp && (
+                      <div className="subpanel helpbox">
+                        <div className="info-card__title">Ayuda</div>
+                        <p className="muted">
+                          Ante cualquier problema con la interfaz, por favor contacte al grupo para una
+                          evaluación de la misma.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {!isMobile && showMinute && (
+                    <div className="reservation-layout__minute">
+                      <MinutePreview
+                        selectedCampus={selectedCampus as keyof typeof minuteByCampus}
+                        selectedMenu={selectedMenu}
+                        showMinute={showMinute}
+                      />
+                    </div>
+                  )}
+                  {isMobile && showMinute && (
+      <div className="reservation-mobile-minute">
+        <MinutePreview
+          selectedCampus={selectedCampus as keyof typeof minuteByCampus}
           selectedMenu={selectedMenu}
-          setSelectedMenu={setSelectedMenu}
-          selectedDates={selectedDates}
-          setSelectedDates={setSelectedDates}
           showMinute={showMinute}
-          setShowMinute={setShowMinute}
-          showHelp={showHelp}
-          setShowHelp={setShowHelp}
-          onReserve={handleReserve}
         />
       </div>
-
-      {showMinute && (
-        <div className="reservation-layout__minute">
-          <MinutePreview
-            selectedCampus={selectedCampus as keyof typeof minuteByCampus}
-            selectedMenu={selectedMenu}
-            showMinute={showMinute}
-          />
-        </div>
-      )}
-    </div>
-
-    <div className="helpbox">
-      <StatsCards
-        almuerzos={availableCounts.almuerzos}
-        cenas={availableCounts.cenas}
-      />
-    </div>
-
-    {showHelp && (
-      <div className="subpanel helpbox">
-        <div className="info-card__title">Ayuda</div>
-        <p className="muted">
-          Ante cualquier problema con la interfaz, por favor contacte al grupo para una evaluación de la misma.
-        </p>
-      </div>
     )}
-  </div>
-)}
+                </div>
+              </div>
+            )}
 
             {activeSection === "Mis reservas" && (
               <div className="section">
@@ -236,21 +264,13 @@ export default function App() {
 
                 <div className="field-grid field-grid--aside">
                   <div className="field-grid">
-                    <StatsCards
-                      almuerzos={availableCounts.almuerzos}
-                      cenas={availableCounts.cenas}
-                    />
+                    <StatsCards almuerzos={availableCounts.almuerzos} cenas={availableCounts.cenas} />
 
                     {editingId != null && (
                       <div className="subpanel" style={{ background: "#f7fbfd" }}>
                         <div
                           className="info-card__title"
-                          style={{
-                            color: BLUE,
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                          }}
+                          style={{ color: BLUE, display: "flex", alignItems: "center", gap: 8 }}
                         >
                           <Sparkles className="icon-btn" />
                           Edición directa de reserva
@@ -284,23 +304,22 @@ export default function App() {
                               ))}
                             </select>
                           </label>
-                          <label className="field">
-                            <span className="field__label">Fecha de reserva</span>
-                            <input
-                              type="date"
-                              value={draftDate}
-                              onChange={(e) => setDraftDate(e.target.value)}
-                              className="field__input"
-                            />
-                          </label>
                         </div>
 
-                        <div className="actions">
-                          <button onClick={saveEdit} className="btn btn--primary">
+                        <div style={{ marginTop: 12 }}>
+                          <ReservationCalendar
+                            selectedDates={draftSelectedDates}
+                            onToggleDate={toggleDraftDate}
+                            legend="Editar fechas de reserva"
+                          />
+                        </div>
+
+                        <div className="actions" style={{ marginTop: 12 }}>
+                          <button onClick={saveEdit} className="btn btn--primary" type="button">
                             <CheckCircle2 className="icon-btn" />
                             Guardar cambios
                           </button>
-                          <button onClick={() => setEditingId(null)} className="btn">
+                          <button onClick={() => setEditingId(null)} className="btn" type="button">
                             <X className="icon-btn" />
                             Cancelar edición
                           </button>
@@ -308,11 +327,7 @@ export default function App() {
                       </div>
                     )}
 
-                    <ReservationsTable
-                      reservations={reservations}
-                      onEdit={openEdit}
-                      onCancel={cancelReservation}
-                    />
+                    <ReservationsTable reservations={reservations} onEdit={openEdit} onCancel={cancelReservation} />
                   </div>
                 </div>
               </div>
@@ -326,10 +341,7 @@ export default function App() {
                 </div>
 
                 <div className="field-grid field-grid--aside">
-                  <StatsCards
-                    almuerzos={availableCounts.almuerzos}
-                    cenas={availableCounts.cenas}
-                  />
+                  <StatsCards almuerzos={availableCounts.almuerzos} cenas={availableCounts.cenas} />
 
                   <div className="info-card">
                     <div className="info-card__title">Vista general</div>
@@ -343,7 +355,12 @@ export default function App() {
       </main>
 
       <FeedbackToast message={feedbackMessage} />
-      <footer className="footer">Sitio web hecho con cariño por el grupo 6</footer>
+
+      <footer className="footer">
+        <div className="footer__inner">
+          <span className="footer__pill">Sitio web hecho con cariño por el grupo 6</span>
+        </div>
+      </footer>
     </div>
   );
 }
