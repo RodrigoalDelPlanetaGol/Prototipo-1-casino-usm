@@ -178,47 +178,52 @@ export default function App() {
 
           <section className="content">
             {activeSection === "Reserva de menú" && (
-              <div className="section">
-                <ReservationForm
-                  selectedCampus={selectedCampus}
-                  setSelectedCampus={setSelectedCampus}
-                  selectedMenu={selectedMenu}
-                  setSelectedMenu={setSelectedMenu}
-                  selectedDates={selectedDates}
-                  setSelectedDates={setSelectedDates}
-                  showMinute={showMinute}
-                  setShowMinute={setShowMinute}
-                  showHelp={showHelp}
-                  setShowHelp={setShowHelp}
-                  onReserve={handleReserve}
-                  toggleDate={toggleDate}
-                />
+  <div className="section">
+    <div className="reservation-layout">
+      <div className="reservation-layout__main">
+        <ReservationForm
+          selectedCampus={selectedCampus}
+          setSelectedCampus={setSelectedCampus}
+          selectedMenu={selectedMenu}
+          setSelectedMenu={setSelectedMenu}
+          selectedDates={selectedDates}
+          setSelectedDates={setSelectedDates}
+          showMinute={showMinute}
+          setShowMinute={setShowMinute}
+          showHelp={showHelp}
+          setShowHelp={setShowHelp}
+          onReserve={handleReserve}
+        />
+      </div>
 
-                <div className="helpbox">
-                  <StatsCards
-                    almuerzos={availableCounts.almuerzos}
-                    cenas={availableCounts.cenas}
-                  />
-                </div>
+      {showMinute && (
+        <div className="reservation-layout__minute">
+          <MinutePreview
+            selectedCampus={selectedCampus as keyof typeof minuteByCampus}
+            selectedMenu={selectedMenu}
+            showMinute={showMinute}
+          />
+        </div>
+      )}
+    </div>
 
-                {showHelp && (
-                  <div className="subpanel helpbox">
-                    <div className="info-card__title">Ayuda</div>
-                    <p className="muted">
-                      Ante cualquier problema con la interfaz, por favor contacte al grupo para una
-                      evaluación de la misma.
-                    </p>
-                  </div>
-                )}
+    <div className="helpbox">
+      <StatsCards
+        almuerzos={availableCounts.almuerzos}
+        cenas={availableCounts.cenas}
+      />
+    </div>
 
-                <MinutePreview
-                  selectedCampus={selectedCampus as keyof typeof minuteByCampus}
-                  selectedMenu={selectedMenu}
-                  showMinute={showMinute}
-                  minute={minute}
-                />
-              </div>
-            )}
+    {showHelp && (
+      <div className="subpanel helpbox">
+        <div className="info-card__title">Ayuda</div>
+        <p className="muted">
+          Ante cualquier problema con la interfaz, por favor contacte al grupo para una evaluación de la misma.
+        </p>
+      </div>
+    )}
+  </div>
+)}
 
             {activeSection === "Mis reservas" && (
               <div className="section">

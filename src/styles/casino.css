@@ -29,9 +29,9 @@ select {
 }
 
 .container {
-  max-width: 1110px;
+  width: min(1700px, calc(100vw - 24px));
   margin: 0 auto;
-  padding: 0 14px;
+  padding: 0 12px;
 }
 
 .top-strip {
@@ -144,7 +144,7 @@ select {
 }
 
 .section {
-  padding: 18px 22px 18px;
+  padding: 14px 18px 18px;
 }
 
 .section__title {
@@ -498,9 +498,32 @@ select {
 }
 
 @media (max-width: 1100px) {
-  .field-grid--aside {
-    grid-template-columns: 1fr;
+  .reservation-layout {
+    display: block;
   }
+
+  .reservation-layout__minute {
+    position: static;
+    margin-top: 12px;
+  }
+}
+
+.reservation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.reservation-layout__main,
+.reservation-layout__minute {
+  min-width: 0;
+}
+
+.reservation-layout__minute {
+  position: sticky;
+  top: 16px;
+  align-self: start;
 }
 
 @media (max-width: 720px) {
@@ -792,5 +815,52 @@ select {
     width: 20px;
     height: 20px;
     font-size: 11px;
+  }
+}
+
+.minute-shell {
+  width: 100%;
+}
+
+.minute-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.minute-panel {
+  min-width: 0;
+}
+
+.minute-panel--allergens {
+  min-width: 0;
+}
+
+@media (min-width: 1101px) {
+  .minute-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .minute-panel--allergens {
+    position: sticky;
+    top: 16px;
+    align-self: start;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 1100px) {
+  .minute-grid {
+    display: block;
+  }
+
+  .minute-panel--allergens {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    margin-top: 12px;
   }
 }
